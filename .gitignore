@@ -1,0 +1,26 @@
+# dependencias
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# variables de entorno / secretos
+.env
+.env.*.local
+
+# cache / tooling
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# builds (depende del framework)
+dist/
+build/
+.out/
+.next/
+coverage/
