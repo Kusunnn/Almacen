@@ -8,10 +8,6 @@ yarn-error.log*
 pnpm-debug.log*
 *.log
 
-# variables de entorno / secretos
-.env
-.env.*.local
-
 # cache / tooling
 .DS_Store
 .vscode/
