@@ -19,6 +19,7 @@ export function toHerramientaDto(herramienta) {
             : null,
         disponibilidad: herramienta.disponibilidad ?? null,
         id_almacen: herramienta.id_almacen ?? null,
+        foto_herramienta: herramienta.foto_herramienta ?? null,
     };
 }
 
@@ -43,6 +44,7 @@ export function fromCreacionDto(dto) {
         estado: dto.estado ?? null,
         fecha_ingreso: dto.fecha_ingreso ? new Date(dto.fecha_ingreso) : null,
         disponibilidad: dto.disponibilidad ?? true,
+        foto_herramienta: dto.foto_herramienta ?? null,
         ...(dto.id_tipo ? { tipos_herramienta: { connect: { id: Number(dto.id_tipo) } } } : {}),
         ...(dto.id_marca ? { marcas: { connect: { id: Number(dto.id_marca) } } } : {}),
         ...(dto.id_almacen ? { almacenes: { connect: { id: Number(dto.id_almacen) } } } : {}),
@@ -61,6 +63,7 @@ export function fromModificacionDto(dto) {
         estado: dto.estado ?? null,
         fecha_ingreso: dto.fecha_ingreso ? new Date(dto.fecha_ingreso) : null,
         disponibilidad: dto.disponibilidad ?? null,
+        foto_herramienta: dto.foto_herramienta ?? null,
         // Relaciones – si vienen null se desconectan, si vienen con id se conectan
         tipos_herramienta: dto.id_tipo
             ? { connect: { id: Number(dto.id_tipo) } }

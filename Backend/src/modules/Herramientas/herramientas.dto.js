@@ -48,6 +48,12 @@ const HerramientaBaseSchema = z.object({
         .positive()
         .nullable()
         .optional(),
+
+    foto_herramienta: z
+        .string()
+        .url("El campo 'foto_herramienta' debe ser una URL válida")
+        .nullable()
+        .optional(),
 });
 
 // ── Schema de creación ────────────────────────────────────────────────────────
@@ -67,6 +73,7 @@ export const HerramientaDtoSchema = z.object({
     fecha_ingreso: z.string().nullable(),   // YYYY-MM-DD
     disponibilidad: z.boolean().nullable(),
     id_almacen: z.number().int().nullable(),
+    foto_herramienta: z.string().nullable(),
 });
 
 // ── Tipos inferidos (para JSDoc / autocomplete) ───────────────────────────────

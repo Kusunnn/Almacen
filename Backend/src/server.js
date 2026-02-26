@@ -4,6 +4,7 @@ import morgan from "morgan";
 
 import herramientasRouter from "./modules/Herramientas/herramientas.routes.js";
 import usuariosRouter from "./modules/Usuarios/usuarios.routes.js"; 
+import prestamosRouter from "./modules/Prestamos/prestamos.routes.js";
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
@@ -16,6 +17,7 @@ app.use(express.json());
 // ── Rutas ─────────────────────────────────────────────────────────────────────
 app.use("/api/herramientas", herramientasRouter);
 app.use("/api/usuarios", usuariosRouter); 
+app.use("/api/prestamos", prestamosRouter);
 
 // ── Ruta raíz (health-check) ──────────────────────────────────────────────────
 app.get("/", (_req, res) => {

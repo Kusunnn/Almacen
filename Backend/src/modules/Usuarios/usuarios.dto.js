@@ -12,6 +12,7 @@ const correoSchema = z
   .transform((v) => v.toLowerCase());
 const contrasenaSchema = z.string().min(6).max(255);
 const idRolSchema = z.coerce.number().int().positive();
+const fotoPerfilSchema = z.string().trim().url().max(500);
 
 
 // Creacion
@@ -23,6 +24,7 @@ export const usuarioCrearDto = z.object({
   correo: correoSchema,
   contrasena: contrasenaSchema,
   idRol: idRolSchema,
+  fotoPerfil: fotoPerfilSchema.optional().nullable(),
 });
 
 
@@ -35,6 +37,7 @@ export const usuarioActualizarDto = z.object({
   correo: correoSchema.optional(),
   contrasena: contrasenaSchema.optional(),
   idRol: idRolSchema.optional(),
+  fotoPerfil: fotoPerfilSchema.optional().nullable(),
 });
 
 

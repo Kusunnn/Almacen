@@ -10,6 +10,7 @@ export function toUsuarioDto(usuario) {
     correo: usuario.correo,
     idRol: usuario.id_rol ?? usuario.idRol ?? null,
     fechaRegistro: usuario.fecha_registro ?? usuario.fechaRegistro ?? null,
+    fotoPerfil: usuario.foto_perfil ?? usuario.fotoPerfil ?? null,
   };
 }
 
@@ -26,6 +27,7 @@ export function toUsuarioCreateData(dto) {
     correo: dto.correo,
     contrasena: dto.contrasena,
     id_rol: dto.idRol,
+    foto_perfil: dto.fotoPerfil ?? null,
   };
 }
 
@@ -39,6 +41,7 @@ export function toUsuarioUpdateData(dto) {
   if (dto.correo !== undefined) data.correo = dto.correo;
   if (dto.contrasena !== undefined) data.contrasena = dto.contrasena;
   if (dto.idRol !== undefined) data.id_rol = dto.idRol;
+  if (dto.fotoPerfil !== undefined) data.foto_perfil = dto.fotoPerfil;
 
   return data;
 }
