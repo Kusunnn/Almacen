@@ -16,3 +16,5 @@ async function probarDatos() {
 
 probarDatos();
 
+// Aquí puedes agregar más funciones para interactuar con tu base de datos usando Prisma, como crear, actualizar o eliminar registros.
+
