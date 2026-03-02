@@ -1,0 +1,97 @@
+<div class="tools-page">
+  <div class="container">
+
+    <header class="tools-header">
+      <div class="title-row">
+        <h1>Herramientas</h1>
+        <button class="btn btn-primary">
+          + Agregar Herramienta
+        </button>
+      </div>
+
+      <div class="controls">
+        <div class="search">
+          <input
+            class="input-base"
+            type="search"
+            placeholder="Buscar herramientas..."
+            aria-label="Buscar herramientas"
+            (input)="onSearch($event)">
+        </div>
+
+        <div class="filters">
+          <button class="btn btn-outline" title="Filtrar">
+            ☰
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <section class="tools-summary">
+      <div class="summary-item card">
+        <div class="label">Total Unidades</div>
+        <div class="value">{{ totalCount }}</div>
+      </div>
+
+      <div class="summary-item card">
+        <div class="label">Disponibles</div>
+        <div class="value value--green">
+          {{ availableCount }}
+        </div>
+      </div>
+
+      <div class="summary-item card">
+        <div class="label">No disponibles</div>
+        <div class="value value--red">
+          {{ lowStockCount }}
+        </div>
+      </div>
+    </section>
+
+    <section class="tools-list">
+      <article class="tool-card card" *ngFor="let tool of filteredTools()">
+        <div
+          class="thumb"
+          role="img"
+          [attr.aria-label]="'Imagen ' + tool.modelName">
+        </div>
+
+        <div class="info">
+          <h3 class="name">{{ tool.modelName }}</h3>
+
+          <div class="meta">
+            Código: {{ tool.modelCode }}<br>
+            ID: {{ tool.unitId }}
+          </div>
+
+          <div
+            [class]="'availability ' + getStatusClass(tool.status)">
+            {{ getStatusLabel(tool.status) }}
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-outline">
+            Editar
+          </button>
+
+          <button
+            class="btn btn-primary"
+            [disabled]="tool.status !== 'available'">
+
+            {{ tool.status === 'available'
+              ? 'Reservar'
+              : 'No disponible' }}
+
+          </button>
+        </div>
+      </article>
+
+      <div *ngIf="filteredTools().length === 0"
+           class="no-results">
+        <p>No se encontraron herramientas.</p>
+      </div>
+    </section>
+
+  </div>
+</div>

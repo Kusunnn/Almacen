@@ -1,1 +1,215 @@
-/* You can add global styles to this file, and also import other style files */
+@use 'styles/variables' as *;
+@use "sass:color";
+
+/* =========================
+   Reset / Base
+========================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+
+  background: linear-gradient(
+    135deg,
+    $color-bg-light,
+    $color-bg-dark
+  );
+
+  color: $color-text;
+  min-height: 100vh;
+}
+
+/* =========================
+   Layout Helpers (NUEVO)
+========================= */
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $padding-lg;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid {
+  display: grid;
+  gap: $padding-lg;
+}
+
+/* =========================
+   Card Component (Reusable)
+========================= */
+
+.card {
+  background: rgba($color-primary, 0.85);
+  backdrop-filter: blur(6px);
+  border-radius: $radius-md;
+  padding: $padding-lg;
+
+  box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+
+  transition: transform $transition-fast, 
+              box-shadow $transition-fast;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 12px 28px rgba(0, 0, 0, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* =========================
+   Buttons System
+========================= */
+
+.btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: $radius-md;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all $transition-fast;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.btn-primary {
+  background-color: $color-action-primary;
+  color: #000;
+
+  &:hover {
+    background-color: color.adjust(
+      $color-action-primary,
+      $lightness: 8%
+    );
+  }
+}
+
+.btn-secondary {
+  background-color: $color-action-secondary;
+  color: #fff;
+}
+
+.btn-success {
+  background-color: $color-success;
+  color: #fff;
+}
+
+.btn-error {
+  background-color: $color-error;
+  color: #fff;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: $color-text;
+}
+
+/* =========================
+   Inputs (Reusable)
+========================= */
+
+.input-base {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border-radius: $radius-md;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  color: $color-text;
+  outline: none;
+  transition: border-color $transition-fast;
+
+  &:focus {
+    border-color: $color-action-primary;
+  }
+}
+
+/* =========================
+   Tables
+========================= */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.8rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: $color-text-secondary;
+  font-weight: 500;
+}
+
+.table td {
+  padding: 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.table tr:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* =========================
+   Sidebar
+========================= */
+
+.sidebar {
+  width: 240px;
+  background-color: $color-primary;
+  height: 100vh;
+  padding: $padding-lg;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.sidebar a {
+  display: block;
+  padding: 0.8rem;
+  color: $color-text-secondary;
+  text-decoration: none;
+  border-radius: $radius-sm;
+  margin-bottom: 0.5rem;
+  transition: $transition-fast;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: $color-action-primary;
+}
+
+/* =========================
+   Section Layout
+========================= */
+
+.section {
+  padding: $padding-lg;
+}
