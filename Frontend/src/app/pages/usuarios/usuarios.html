@@ -1,0 +1,72 @@
+<div class="users-page">
+  <div class="profile-section">
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="avatar">
+          <span>{{ currentUser.name.charAt(0) }}</span>
+        </div>
+
+        <div class="profile-info">
+          <h1 class="name">{{ currentUser.name }}</h1>
+          <p class="role">{{ currentUser.role }}</p>
+
+          <div class="employee-details">
+            <div class="detail">
+              <span class="label">ID Empleado:</span>
+              <span class="value">{{ currentUser.employeeId }}</span>
+            </div>
+            <div class="detail">
+              <span class="label">Ubicación Actual:</span>
+              <span class="value">{{ currentUser.location }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="btn btn-primary">INICIAR SOLICITUD</button>
+        <button class="btn btn-secondary">CREAR REPORTE</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tools-section">
+    <div class="section-header">
+      <h2>HERRAMIENTAS EN MI POSESIÓN</h2>
+    </div>
+
+    <div class="table-container">
+      <table class="tools-table">
+        <thead>
+          <tr>
+            <th>Marca</th>
+            <th>Nombre Herramienta</th>
+            <th>ID Activo</th>
+            <th>Fecha Ingreso</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tool of currentUser.tools">
+            <td>{{ tool.brand }}</td>
+            <td>{{ tool.name }}</td>
+            <td>{{ tool.id }}</td>
+            <td>{{ tool.date }}</td>
+            <td>
+              <span [class]="'status ' + getStatusClass(tool.status)">
+                {{ getStatusLabel(tool.status) }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-action btn-view" title="Ver Detalles">👁️</button>
+                <button class="btn-action btn-return" title="Devolver">↩️</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
