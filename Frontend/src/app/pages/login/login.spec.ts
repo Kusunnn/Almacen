@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
 
@@ -8,17 +9,24 @@ import { AuthService } from '../../services/auth.service';
 describe('Login', () => {
   let component: Login;
   let fixture: ComponentFixture<Login>;
-  let auth: AuthService;
+  let auth: {
+    login: ReturnType<typeof vi.fn>;
+    isAuthenticated: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
+    auth = {
+      login: vi.fn(),
+      isAuthenticated: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [Login, RouterTestingModule, FormsModule],
-      providers: [AuthService],
+      providers: [{ provide: AuthService, useValue: auth }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Login);
     component = fixture.componentInstance;
-    auth = TestBed.inject(AuthService);
     await fixture.whenStable();
   });
 
@@ -27,16 +35,23 @@ describe('Login', () => {
   });
 
   it('should reject invalid credentials', () => {
-    component.credentials.username = 'foo';
-    component.credentials.password = 'bar';
-    expect(component.onSubmit()).toBeFalse();
-    expect(component.error).toBe('Usuario o contraseña inválidos');
+    auth.login.mockReturnValue(of(false));
+    component.credentials.correo = 'foo@bar.com';
+    component.credentials.contrasena = 'bar';
+
+    component.onSubmit();
+
+    expect(component.error).toBe('Correo o contraseña inválidos');
   });
 
   it('should accept correct credentials', () => {
-    component.credentials.username = 'admin';
-    component.credentials.password = '1234';
-    expect(component.onSubmit()).toBeTrue();
-    expect(auth.isAuthenticated).toBeTrue();
+    auth.login.mockReturnValue(of(true));
+    component.credentials.correo = 'admin@correo.com';
+    component.credentials.contrasena = '123456';
+
+    component.onSubmit();
+
+    expect(component.error).toBe('');
+    expect(auth.login).toHaveBeenCalledWith('admin@correo.com', '123456');
   });
 });

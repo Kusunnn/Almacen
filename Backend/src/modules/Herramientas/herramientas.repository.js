@@ -4,11 +4,21 @@
 
 import { prisma } from "../../db/prisma.js";
 
+const includeRelations = {
+    marcas: {
+        select: { id: true, nombre: true },
+    },
+    tipos_herramienta: {
+        select: { id: true, nombre: true },
+    },
+};
+
 /**
  * Retorna todas las herramientas ordenadas por id descendente.
  */
 export async function findAll() {
     return prisma.herramientas.findMany({
+        include: includeRelations,
         orderBy: { id: "desc" },
     });
 }
@@ -20,6 +30,7 @@ export async function findAll() {
 export async function findById(id) {
     return prisma.herramientas.findUnique({
         where: { id },
+        include: includeRelations,
     });
 }
 
@@ -44,7 +55,10 @@ export async function existsByNombre(nombre, excludeId = null) {
  * @param {import('@prisma/client').Prisma.herramientasCreateInput} data
  */
 export async function create(data) {
-    return prisma.herramientas.create({ data });
+    return prisma.herramientas.create({
+        data,
+        include: includeRelations,
+    });
 }
 
 /**
@@ -53,7 +67,11 @@ export async function create(data) {
  * @param {import('@prisma/client').Prisma.herramientasUpdateInput} data
  */
 export async function update(id, data) {
-    return prisma.herramientas.update({ where: { id }, data });
+    return prisma.herramientas.update({
+        where: { id },
+        data,
+        include: includeRelations,
+    });
 }
 
 /**

@@ -5,6 +5,7 @@ import {
   usuarioEliminarDto,
   usuarioFiltroDto,
   usuarioIdParamDto,
+  usuarioLoginDto,
 } from "./usuarios.dto.js";
 import {
   toUsuarioCreateData,
@@ -36,6 +37,34 @@ function handleControllerError(error, res, next) {
 }
 
 export const usuariosController = {
+  async listarRoles(_req, res, next) {
+    try {
+      const roles = await usuariosService.listarRoles();
+      return res.json(
+        roles.map((rol) => ({
+          id: rol.id,
+          nombre: rol.nombre,
+        }))
+      );
+    } catch (error) {
+      return handleControllerError(error, res, next);
+    }
+  },
+
+  async login(req, res, next) {
+    try {
+      const credenciales = usuarioLoginDto.parse(req.body);
+      const usuario = await usuariosService.autenticar(credenciales);
+
+      return res.json({
+        mensaje: "Login exitoso",
+        usuario: toUsuarioDto(usuario),
+      });
+    } catch (error) {
+      return handleControllerError(error, res, next);
+    }
+  },
+
   async listar(req, res, next) {
     try {
       // Valida req.query (filtros opcionales)

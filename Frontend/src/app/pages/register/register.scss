@@ -7,34 +7,40 @@
   justify-content: center;
 }
 
-.login-card {
-  /* the .card utility is applied via class in the template */
+.register-shell {
+  min-height: 100vh;
+  padding: 1rem 0;
+}
+
+.register-card {
   width: 90%;
-  max-width: 360px;
+  max-width: 420px;
   padding: 2rem;
 }
 
-.login-card h2 {
+.register-card h2 {
   text-align: center;
   margin-bottom: 1.5rem;
 }
 
-.login-form {
+.register-form {
   display: flex;
   flex-direction: column;
   gap: $padding-md;
-}
-
-/* Inputs and buttons already use the global utility classes via the template */
-
-.error {
-  color: $color-error;
-  margin-top: $padding-sm;
-  text-align: center;
 }
 
 .register-link {
   text-align: center;
   color: inherit;
   text-decoration: underline;
+}
+
+.error {
+  color: $color-error;
+  text-align: center;
+}
+
+.success {
+  color: #1f7a3d;
+  text-align: center;
 }

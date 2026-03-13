@@ -2,39 +2,38 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
 })
 export class Login {
-  credentials = { username: '', password: '' };
+  credentials = { correo: '', contrasena: '' };
   error = '';
+  loading = false;
 
   constructor(private router: Router, private auth: AuthService) {}
 
-  /**
-   * Attempt to authenticate the local test user. Returns true if
-   * successful and navigates to the dashboard; otherwise shows an
-   * error message and returns false. This return value is useful for
-   * unit tests.
-   */
-  onSubmit(): boolean {
-    const ok = this.auth.login(
-      this.credentials.username,
-      this.credentials.password
-    );
-    if (ok) {
-      this.error = '';
-      this.router.navigate(['/dashboard']);
-      return true;
-    } else {
-      this.error = 'Usuario o contraseña inválidos';
-      return false;
-    }
+  onSubmit(): void {
+    this.loading = true;
+    this.error = '';
+
+    this.auth
+      .login(this.credentials.correo, this.credentials.contrasena)
+      .subscribe((ok) => {
+        this.loading = false;
+
+        if (ok) {
+          this.router.navigate(['/dashboard']);
+          return;
+        }
+
+        this.error = 'Correo o contraseña inválidos';
+      });
   }
 }

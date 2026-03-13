@@ -1,5 +1,17 @@
 <div class="users-page">
-  <div class="profile-section">
+  <div *ngIf="loading" class="profile-section">
+    <div class="profile-card">
+      <p>Cargando usuario...</p>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="profile-section">
+    <div class="profile-card">
+      <p>{{ error }}</p>
+    </div>
+  </div>
+
+  <div class="profile-section" *ngIf="!loading && !error">
     <div class="profile-card">
       <div class="profile-header">
         <div class="avatar">
@@ -30,7 +42,7 @@
     </div>
   </div>
 
-  <div class="tools-section">
+  <div class="tools-section" *ngIf="!loading && !error">
     <div class="section-header">
       <h2>HERRAMIENTAS EN MI POSESIÓN</h2>
     </div>
@@ -64,6 +76,9 @@
                 <button class="btn-action btn-return" title="Devolver">↩️</button>
               </div>
             </td>
+          </tr>
+          <tr *ngIf="currentUser.tools.length === 0">
+            <td colspan="6">No hay herramientas asociadas a este usuario.</td>
           </tr>
         </tbody>
       </table>

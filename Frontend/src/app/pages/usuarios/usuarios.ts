@@ -1,22 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface UserTool {
-  brand: string;
-  name: string;
-  id: string;
-  date: string;
-  status: 'disponible' | 'reservada' | 'mantenimiento';
-}
-
-interface User {
-  id: string;
-  name: string;
-  role: string;
-  employeeId: string;
-  location: string;
-  tools: UserTool[];
-}
+import { finalize } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+import { UsersService } from '../../services/users.service';
+import { UserProfileView } from '../../models/user.model';
 
 @Component({
   selector: 'app-usuarios',
@@ -25,37 +12,49 @@ interface User {
   templateUrl: './usuarios.html',
   styleUrls: ['./usuarios.scss'],
 })
-export class Usuarios {
-  currentUser: User = {
-    id: 'USR-001',
-    name: 'Juan Manuel Pérez',
-    role: 'Técnico de Obra - Obra Actual',
-    employeeId: 'WM-729',
-    location: 'Obra Insurgente - Sección A',
-    tools: [
-      {
-        brand: 'DeWalt',
-        name: 'Taladro Percutor',
-        id: 'AX-101',
-        date: '15/10/2023',
-        status: 'disponible',
-      },
-      {
-        brand: 'Bosch',
-        name: 'Sierra Circular Makita',
-        id: 'SC-203',
-        date: '14/10/2023',
-        status: 'disponible',
-      },
-      {
-        brand: 'Stanley',
-        name: 'Juego de Dados Stanley',
-        id: 'JD-05',
-        date: '14/10/2023',
-        status: 'reservada',
-      },
-    ],
+export class Usuarios implements OnInit {
+  currentUser: UserProfileView = {
+    id: '',
+    name: '',
+    role: '',
+    employeeId: '',
+    location: '',
+    tools: [],
   };
+  loading = true;
+  error = '';
+
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+    private readonly cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      this.loading = false;
+      this.error = 'No hay una sesión activa';
+      return;
+    }
+
+    this.usersService
+      .getUserProfile(currentUser.id)
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (profile) => {
+          this.currentUser = profile;
+        },
+        error: () => {
+          this.error = 'No se pudo cargar la información del usuario';
+        },
+      });
+  }
 
   getStatusLabel(status: string): string {
     switch (status) {

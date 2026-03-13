@@ -4,7 +4,24 @@ import { prisma } from "../../db/prisma.js";
 // cambia esta referencia una sola vez aquí.
 const usuariosModel = prisma.usuarios;
 
+const includeRelations = {
+  roles: {
+    select: { id: true, nombre: true },
+  },
+};
+
 export const usuariosRepository = {
+  findRoles() {
+    return prisma.roles.findMany({
+      orderBy: { nombre: "asc" },
+    });
+  },
+
+  async existsRol(id) {
+    const count = await prisma.roles.count({ where: { id } });
+    return count > 0;
+  },
+
   findAll(filters = {}) {
     const where = {};
 
@@ -19,28 +36,37 @@ export const usuariosRepository = {
 
     return usuariosModel.findMany({
       where,
+      include: includeRelations,
       orderBy: { fecha_registro: "desc" },
     });
   },
 
   findById(id) {
-    return usuariosModel.findUnique({ where: { id } });
+    return usuariosModel.findUnique({
+      where: { id },
+      include: includeRelations,
+    });
   },
 
   findByCorreo(correo) {
     return usuariosModel.findFirst({
       where: { correo: { equals: correo, mode: "insensitive" } },
+      include: includeRelations,
     });
   },
 
   create(data) {
-    return usuariosModel.create({ data });
+    return usuariosModel.create({
+      data,
+      include: includeRelations,
+    });
   },
 
   update(id, data) {
     return usuariosModel.update({
       where: { id },
       data,
+      include: includeRelations,
     });
   },
 

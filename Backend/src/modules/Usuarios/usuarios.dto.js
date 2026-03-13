@@ -27,6 +27,11 @@ export const usuarioCrearDto = z.object({
   fotoPerfil: fotoPerfilSchema.optional().nullable(),
 });
 
+export const usuarioLoginDto = z.object({
+  correo: correoSchema,
+  contrasena: contrasenaSchema,
+});
+
 
 // Modificar
 export const usuarioActualizarDto = z.object({

@@ -10,6 +10,20 @@ function buildError(message, status = 500) {
 }
 
 export const usuariosService = {
+  async listarRoles() {
+    return usuariosRepository.findRoles();
+  },
+
+  async autenticar({ correo, contrasena }) {
+    const usuario = await usuariosRepository.findByCorreo(correo);
+    if (!usuario) throw buildError("Credenciales inválidas", 401);
+
+    const contrasenaValida = await bcrypt.compare(contrasena, usuario.contrasena);
+    if (!contrasenaValida) throw buildError("Credenciales inválidas", 401);
+
+    return usuario;
+  },
+
   async listar(filtros) {
     return usuariosRepository.findAll(filtros);
   },
@@ -25,6 +39,13 @@ export const usuariosService = {
     const existente = await usuariosRepository.findByCorreo(data.correo);
     if (existente) {
       throw buildError("Ya existe un usuario con ese correo", 400);
+    }
+
+    if (data.roles?.connect?.id) {
+      const rolExiste = await usuariosRepository.existsRol(data.roles.connect.id);
+      if (!rolExiste) {
+        throw buildError("El rol indicado no existe", 400);
+      }
     }
 
     // Guardamos la contraseña hasheada, nunca en texto plano.
@@ -45,6 +66,13 @@ export const usuariosService = {
       const existente = await usuariosRepository.findByCorreo(data.correo);
       if (existente && existente.id !== id) {
         throw buildError("Ya existe un usuario con ese correo", 400);
+      }
+    }
+
+    if (data.roles?.connect?.id) {
+      const rolExiste = await usuariosRepository.existsRol(data.roles.connect.id);
+      if (!rolExiste) {
+        throw buildError("El rol indicado no existe", 400);
       }
     }
 

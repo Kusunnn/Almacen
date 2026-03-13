@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs';
 import { ToolsService } from '../../services/tools.service';
 import { ToolUnit } from '../../models/tool.model';
 
@@ -16,20 +17,38 @@ export class Herramientas implements OnInit {
   availableCount: number = 0;
   lowStockCount: number = 0;
   searchText: string = '';
+  loading = true;
+  error = '';
 
-  constructor(private toolsService: ToolsService) {}
+  constructor(
+    private readonly toolsService: ToolsService,
+    private readonly cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
-    this.toolsService.getAllUnits().subscribe((units) => {
-      this.tools = units;
-      this.updateStats();
-    });
+    this.toolsService
+      .getAllUnits()
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (units) => {
+          this.tools = units;
+          this.updateStats();
+        },
+        error: () => {
+          this.error = 'No se pudieron cargar las herramientas';
+        },
+      });
   }
 
   updateStats() {
-    this.totalCount = this.toolsService.getTotalCount();
-    this.availableCount = this.toolsService.getAvailableCount();
-    this.lowStockCount = this.toolsService.getLowStockCount();
+    this.totalCount = this.toolsService.getTotalCount(this.tools);
+    this.availableCount = this.toolsService.getAvailableCount(this.tools);
+    this.lowStockCount = this.toolsService.getLowStockCount(this.tools);
   }
 
   getStatusLabel(status: string): string {
@@ -67,7 +86,8 @@ export class Herramientas implements OnInit {
       (tool) =>
         tool.modelName.toLowerCase().includes(search) ||
         tool.brandName.toLowerCase().includes(search) ||
-        tool.unitId.toLowerCase().includes(search)
+        tool.unitId.toLowerCase().includes(search) ||
+        tool.toolTypeName.toLowerCase().includes(search)
     );
   }
 

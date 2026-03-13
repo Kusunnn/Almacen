@@ -9,10 +9,16 @@ import prestamosRouter from "./modules/Prestamos/prestamos.routes.js";
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 
+app.disable("etag");
+
 // ── Middleware global ─────────────────────────────────────────────────────────
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
+app.use("/api", (_req, res, next) => {
+    res.setHeader("Cache-Control", "no-store");
+    next();
+});
 
 // ── Rutas ─────────────────────────────────────────────────────────────────────
 app.use("/api/herramientas", herramientasRouter);

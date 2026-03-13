@@ -69,11 +69,13 @@ export const HerramientaDtoSchema = z.object({
     descripcion: z.string().nullable(),
     id_tipo: z.number().int().nullable(),
     id_marca: z.number().int().nullable(),
+    marca_nombre: z.string().nullable().optional(),
     estado: z.string().nullable(),
     fecha_ingreso: z.string().nullable(),   // YYYY-MM-DD
     disponibilidad: z.boolean().nullable(),
     id_almacen: z.number().int().nullable(),
     foto_herramienta: z.string().nullable(),
+    tipo_nombre: z.string().nullable().optional(),
 });
 
 // ── Tipos inferidos (para JSDoc / autocomplete) ───────────────────────────────

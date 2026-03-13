@@ -49,6 +49,14 @@
     </section>
 
     <section class="tools-list">
+      <div *ngIf="loading" class="no-results">
+        <p>Cargando herramientas...</p>
+      </div>
+
+      <div *ngIf="error" class="no-results">
+        <p>{{ error }}</p>
+      </div>
+
       <article class="tool-card card" *ngFor="let tool of filteredTools()">
         <div
           class="thumb"
@@ -60,6 +68,8 @@
           <h3 class="name">{{ tool.modelName }}</h3>
 
           <div class="meta">
+            Tipo: {{ tool.toolTypeName }}<br>
+            Marca: {{ tool.brandName }}<br>
             Código: {{ tool.modelCode }}<br>
             ID: {{ tool.unitId }}
           </div>
@@ -87,7 +97,7 @@
         </div>
       </article>
 
-      <div *ngIf="filteredTools().length === 0"
+      <div *ngIf="!loading && !error && filteredTools().length === 0"
            class="no-results">
         <p>No se encontraron herramientas.</p>
       </div>

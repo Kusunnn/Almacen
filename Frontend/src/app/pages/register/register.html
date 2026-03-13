@@ -1,0 +1,91 @@
+<div class="flex flex-center register-shell">
+  <div class="card register-card">
+    <h2>Registrar usuario</h2>
+
+    <form (ngSubmit)="onSubmit()" class="register-form">
+      <input
+        class="input-base"
+        type="text"
+        name="nombre"
+        [(ngModel)]="form.nombre"
+        placeholder="Nombre completo"
+        required
+      />
+
+      <input
+        class="input-base"
+        type="number"
+        name="edad"
+        [(ngModel)]="form.edad"
+        placeholder="Edad"
+        min="0"
+        required
+      />
+
+      <input
+        class="input-base"
+        type="text"
+        name="telefono"
+        [(ngModel)]="form.telefono"
+        placeholder="Teléfono"
+        required
+      />
+
+      <input
+        class="input-base"
+        type="text"
+        name="direccion"
+        [(ngModel)]="form.direccion"
+        placeholder="Dirección"
+        required
+      />
+
+      <input
+        class="input-base"
+        type="email"
+        name="correo"
+        [(ngModel)]="form.correo"
+        placeholder="Correo"
+        required
+      />
+
+      <input
+        class="input-base"
+        type="password"
+        name="contrasena"
+        [(ngModel)]="form.contrasena"
+        placeholder="Contraseña"
+        required
+      />
+
+      <select
+        class="input-base"
+        name="idRol"
+        [(ngModel)]="form.idRol"
+        [disabled]="loadingRoles"
+        required>
+        <option [ngValue]="null">Selecciona un rol</option>
+        <option *ngFor="let role of roles" [ngValue]="role.id">
+          {{ role.nombre }}
+        </option>
+      </select>
+
+      <input
+        class="input-base"
+        type="url"
+        name="fotoPerfil"
+        [(ngModel)]="form.fotoPerfil"
+        placeholder="Foto de perfil (opcional)"
+      />
+
+      <button class="btn btn-primary" type="submit" [disabled]="submitting || loadingRoles">
+        {{ submitting ? 'Guardando...' : 'Crear usuario' }}
+      </button>
+
+      <a class="register-link" routerLink="/login">Volver al login</a>
+
+      <div *ngIf="success" class="success">{{ success }}</div>
+      <div *ngIf="error" class="error">{{ error }}</div>
+    </form>
+  </div>
+</div>

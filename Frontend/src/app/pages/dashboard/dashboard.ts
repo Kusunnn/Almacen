@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from "@angular/router";
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,5 +10,9 @@ import { RouterLink } from "@angular/router";
   styleUrls: ['./dashboard.scss'],
 })
 export class Dashboard {
+  constructor(private readonly authService: AuthService) {}
 
+  logout(): void {
+    this.authService.logout();
+  }
 }

@@ -1,225 +1,75 @@
-import { Injectable } from '@angular/core';
-import { ToolType, ToolUnit } from '../models/tool.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map, timeout } from 'rxjs';
+import { ToolUnit } from '../models/tool.model';
+import { API_BASE_URL } from './api.config';
+
+interface ApiTool {
+  id: number;
+  nombre: string;
+  descripcion: string | null;
+  id_tipo: number | null;
+  id_marca: number | null;
+  marca_nombre?: string | null;
+  tipo_nombre?: string | null;
+  estado: string | null;
+  fecha_ingreso: string | null;
+  disponibilidad: boolean | null;
+  id_almacen: number | null;
+  foto_herramienta: string | null;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class ToolsService {
-  private toolsData: ToolType[] = [
-    {
-      id: 'martillos',
-      name: 'Martillos',
-      brands: [
-        {
-          name: 'DeWalt',
-          models: [
-            {
-              name: 'Plano',
-              code: 'DEWALT-M-PLANO-001',
-              units: [
-                { id: 'UNI-001', status: 'available' },
-                { id: 'UNI-002', status: 'available' },
-                { id: 'UNI-003', status: 'reserved' },
-              ],
-            },
-            {
-              name: 'Curvo',
-              code: 'DEWALT-M-CURVO-001',
-              units: [
-                { id: 'UNI-004', status: 'available' },
-                { id: 'UNI-005', status: 'available' },
-              ],
-            },
-          ],
-        },
-        {
-          name: 'Makita',
-          models: [
-            {
-              name: 'Plano',
-              code: 'MAKITA-M-PLANO-001',
-              units: [
-                { id: 'UNI-006', status: 'available' },
-                { id: 'UNI-007', status: 'maintenance' },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 'taladros',
-      name: 'Taladros',
-      brands: [
-        {
-          name: 'Bosch',
-          models: [
-            {
-              name: 'Taladro Percutor',
-              code: 'BOSCH-T-PERCUTOR-001',
-              units: [
-                { id: 'UNI-008', status: 'available' },
-                { id: 'UNI-009', status: 'available' },
-                { id: 'UNI-010', status: 'reserved' },
-              ],
-            },
-          ],
-        },
-        {
-          name: 'Makita',
-          models: [
-            {
-              name: 'Taladro Compacto',
-              code: 'MAKITA-T-COMPACTO-001',
-              units: [
-                { id: 'UNI-011', status: 'available' },
-                { id: 'UNI-012', status: 'maintenance' },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 'desarmadores',
-      name: 'Desarmadores',
-      brands: [
-        {
-          name: 'Kingtools',
-          models: [
-            {
-              name: 'Set Phillips',
-              code: 'KINGTOOLS-D-PHILLIPS-001',
-              units: [
-                { id: 'UNI-013', status: 'available' },
-                { id: 'UNI-014', status: 'available' },
-                { id: 'UNI-015', status: 'available' },
-                { id: 'UNI-016', status: 'reserved' },
-              ],
-            },
-            {
-              name: 'Set Plano',
-              code: 'KINGTOOLS-D-PLANO-001',
-              units: [
-                { id: 'UNI-017', status: 'available' },
-                { id: 'UNI-018', status: 'available' },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 'escaleras',
-      name: 'Escaleras',
-      brands: [
-        {
-          name: 'Werner',
-          models: [
-            {
-              name: 'Escalera de 6 peldaños',
-              code: 'WERNER-E-6P-001',
-              units: [
-                { id: 'UNI-019', status: 'available' },
-                { id: 'UNI-020', status: 'available' },
-              ],
-            },
-            {
-              name: 'Escalera de 8 peldaños',
-              code: 'WERNER-E-8P-001',
-              units: [
-                { id: 'UNI-021', status: 'reserved' },
-                { id: 'UNI-022', status: 'available' },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 'andamios',
-      name: 'Andamios',
-      brands: [
-        {
-          name: 'SafeScaf',
-          models: [
-            {
-              name: 'Andamio Profesional',
-              code: 'SAFESCAF-A-PRO-001',
-              units: [
-                { id: 'UNI-023', status: 'available' },
-                { id: 'UNI-024', status: 'maintenance' },
-                { id: 'UNI-025', status: 'available' },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-  ];
+  private readonly http = inject(HttpClient);
 
-  private allUnits$ = new BehaviorSubject<ToolUnit[]>([]);
-
-  constructor() {
-    this.loadAllUnits();
-  }
-
-  private loadAllUnits() {
-    const units: ToolUnit[] = [];
-
-    this.toolsData.forEach((toolType) => {
-      toolType.brands.forEach((brand) => {
-        brand.models.forEach((model) => {
-          model.units.forEach((unit) => {
-            units.push({
-              unitId: unit.id,
-              toolTypeName: toolType.name,
-              brandName: brand.name,
-              modelName: model.name,
-              modelCode: model.code,
-              status: unit.status,
-              location: unit.location,
-            });
-          });
-        });
-      });
-    });
-
-    this.allUnits$.next(units);
-  }
-
-  // Obtener todas las unidades de forma plana
   getAllUnits(): Observable<ToolUnit[]> {
-    return this.allUnits$.asObservable();
+    return this.http.get<ApiTool[]>(`${API_BASE_URL}/herramientas`).pipe(
+      timeout(5000),
+      map((tools) => tools.map((tool) => this.mapTool(tool)))
+    );
   }
 
-  // Obtener la estructura jerárquica completa
-  getToolTypes(): ToolType[] {
-    return this.toolsData;
+  getTotalCount(tools: ToolUnit[]): number {
+    return tools.length;
   }
 
-  // Obtener unidades por tipo
-  getUnitsByType(typeId: string): ToolUnit[] {
-    return this.allUnits$
-      .getValue()
-      .filter((u) => u.toolTypeName.toLowerCase().includes(typeId.toLowerCase()));
+  getAvailableCount(tools: ToolUnit[]): number {
+    return tools.filter((tool) => tool.status === 'available').length;
   }
 
-  // Obtener total de unidades
-  getTotalCount(): number {
-    return this.allUnits$.getValue().length;
+  getLowStockCount(tools: ToolUnit[]): number {
+    return tools.filter((tool) => tool.status !== 'available').length;
   }
 
-  // Obtener unidades disponibles
-  getAvailableCount(): number {
-    return this.allUnits$.getValue().filter((u) => u.status === 'available').length;
+  private mapTool(tool: ApiTool): ToolUnit {
+    return {
+      id: tool.id,
+      unitId: `HR-${String(tool.id).padStart(3, '0')}`,
+      toolTypeName: tool.tipo_nombre ?? 'Sin tipo',
+      brandName: tool.marca_nombre ?? 'Sin marca',
+      modelName: tool.nombre,
+      modelCode: `HM-${String(tool.id).padStart(4, '0')}`,
+      status: this.mapStatus(tool),
+      location: tool.id_almacen ? `Almacén ${tool.id_almacen}` : 'Sin almacén',
+      imageUrl: tool.foto_herramienta,
+      description: tool.descripcion,
+    };
   }
 
-  // Obtener unidades en bajo stock (reservadas + mantenimiento)
-  getLowStockCount(): number {
-    return this.allUnits$
-      .getValue()
-      .filter((u) => u.status !== 'available').length;
+  private mapStatus(tool: ApiTool): ToolUnit['status'] {
+    const estado = tool.estado?.toLowerCase();
+
+    if (tool.disponibilidad === false) {
+      return 'reserved';
+    }
+
+    if (estado === 'mantenimiento') {
+      return 'maintenance';
+    }
+
+    return 'available';
   }
 }

@@ -13,6 +13,7 @@ export function toHerramientaDto(herramienta) {
         descripcion: herramienta.descripcion ?? null,
         id_tipo: herramienta.id_tipo ?? null,
         id_marca: herramienta.id_marca ?? null,
+        marca_nombre: herramienta.marcas?.nombre ?? null,
         estado: herramienta.estado ?? null,
         fecha_ingreso: herramienta.fecha_ingreso
             ? herramienta.fecha_ingreso.toISOString().split("T")[0]
@@ -20,6 +21,7 @@ export function toHerramientaDto(herramienta) {
         disponibilidad: herramienta.disponibilidad ?? null,
         id_almacen: herramienta.id_almacen ?? null,
         foto_herramienta: herramienta.foto_herramienta ?? null,
+        tipo_nombre: herramienta.tipos_herramienta?.nombre ?? null,
     };
 }
 
