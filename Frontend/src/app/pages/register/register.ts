@@ -12,11 +12,15 @@ import { UsersService } from '../../services/users.service';
   styleUrls: ['./register.scss'],
 })
 export class Register implements OnInit {
+  private readonly maxPhotoSizeBytes = 1_500_000;
+
   roles: { id: number; nombre: string }[] = [];
   loadingRoles = true;
   submitting = false;
   error = '';
   success = '';
+  selectedPhotoName = '';
+  photoPreview = '';
 
   form = {
     nombre: '',
@@ -45,6 +49,56 @@ export class Register implements OnInit {
         this.error = 'No se pudieron cargar los roles';
       },
     });
+  }
+
+  onPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0];
+
+    this.error = '';
+
+    if (!file) {
+      this.clearPhoto();
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      this.clearPhoto(input);
+      this.error = 'Selecciona un archivo de imagen válido';
+      return;
+    }
+
+    if (file.size > this.maxPhotoSizeBytes) {
+      this.clearPhoto(input);
+      this.error = 'La foto no debe superar 1.5 MB';
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : '';
+      this.form.fotoPerfil = result;
+      this.photoPreview = result;
+      this.selectedPhotoName = file.name;
+    };
+
+    reader.onerror = () => {
+      this.clearPhoto(input);
+      this.error = 'No se pudo leer la imagen seleccionada';
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  clearPhoto(input?: HTMLInputElement | null): void {
+    this.form.fotoPerfil = '';
+    this.photoPreview = '';
+    this.selectedPhotoName = '';
+
+    if (input) {
+      input.value = '';
+    }
   }
 
   onSubmit(): void {

@@ -70,13 +70,28 @@
         </option>
       </select>
 
-      <input
-        class="input-base"
-        type="url"
-        name="fotoPerfil"
-        [(ngModel)]="form.fotoPerfil"
-        placeholder="Foto de perfil (opcional)"
-      />
+      <div class="photo-field">
+        <label class="photo-label" for="fotoPerfil">Foto de perfil (opcional)</label>
+        <input
+          class="input-base"
+          id="fotoPerfil"
+          type="file"
+          name="fotoPerfil"
+          accept="image/*"
+          (change)="onPhotoSelected($event)"
+        />
+        <p class="photo-help">Selecciona una imagen JPG, PNG, WEBP o similar de hasta 1.5 MB.</p>
+
+        <div *ngIf="photoPreview" class="photo-preview">
+          <img [src]="photoPreview" alt="Vista previa de la foto de perfil" />
+          <div class="photo-preview__meta">
+            <span>{{ selectedPhotoName }}</span>
+            <button class="btn btn-secondary" type="button" (click)="clearPhoto()">
+              Quitar foto
+            </button>
+          </div>
+        </div>
+      </div>
 
       <button class="btn btn-primary" type="submit" [disabled]="submitting || loadingRoles">
         {{ submitting ? 'Guardando...' : 'Crear usuario' }}

@@ -12,7 +12,23 @@ const correoSchema = z
   .transform((v) => v.toLowerCase());
 const contrasenaSchema = z.string().min(6).max(255);
 const idRolSchema = z.coerce.number().int().positive();
-const fotoPerfilSchema = z.string().trim().url().max(500);
+const fotoPerfilSchema = z
+  .string()
+  .trim()
+  .max(2_000_000, "El campo 'fotoPerfil' es demasiado grande")
+  .refine((value) => {
+    try {
+      const url = new URL(value);
+
+      if (url.protocol === "data:") {
+        return /^data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+$/.test(value);
+      }
+
+      return url.protocol === "http:" || url.protocol === "https:";
+    } catch {
+      return false;
+    }
+  }, "El campo 'fotoPerfil' debe ser una URL válida o una imagen en base64");
 
 
 // Creacion
