@@ -29,7 +29,10 @@ function handleControllerError(error, res, next) {
 
   // Errores de negocio definidos en el service
   if (error?.status) {
-    return res.status(error.status).json({ mensaje: error.message });
+    return res.status(error.status).json({
+      mensaje: error.message,
+      ...(error.detalles ? { detalles: error.detalles } : {}),
+    });
   }
 
   // Lo demás lo delegamos al middleware global (si existe)

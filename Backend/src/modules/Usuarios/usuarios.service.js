@@ -38,7 +38,7 @@ export const usuariosService = {
     // Validación de negocio: correo único
     const existente = await usuariosRepository.findByCorreo(data.correo);
     if (existente) {
-      throw buildError("Ya existe un usuario con ese correo", 400);
+      throw buildError("Ya existe un usuario con ese correo", 409);
     }
 
     if (data.roles?.connect?.id) {
