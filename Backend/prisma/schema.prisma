@@ -27,6 +27,7 @@ model herramientas {
   disponibilidad    Boolean?           @default(true)
   id_almacen        Int?
   foto_herramienta  String?
+  cantidad          Int?               @db.SmallInt
   almacenes         almacenes?         @relation(fields: [id_almacen], references: [id], onDelete: NoAction, onUpdate: NoAction)
   marcas            marcas?            @relation(fields: [id_marca], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tipos_herramienta tipos_herramienta? @relation(fields: [id_tipo], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -40,6 +41,7 @@ model historial {
   id_herramienta   Int?
   fecha_movimiento DateTime?     @default(now()) @db.Timestamp(6)
   herramientas     herramientas? @relation(fields: [id_herramienta], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuarios         usuarios?     @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model marcas {
@@ -71,6 +73,7 @@ model usuarios {
   id_rol         Int?
   fecha_registro DateTime?   @default(now()) @db.Timestamp(6)
   foto_perfil    String?
+  historial      historial[]
   prestamos      prestamos[]
   roles          roles?      @relation(fields: [id_rol], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

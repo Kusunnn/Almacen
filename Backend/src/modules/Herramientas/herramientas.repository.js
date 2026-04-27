@@ -5,6 +5,9 @@
 import { prisma } from "../../db/prisma.js";
 
 const includeRelations = {
+    almacenes: {
+        select: { id: true, nombre: true },
+    },
     marcas: {
         select: { id: true, nombre: true },
     },

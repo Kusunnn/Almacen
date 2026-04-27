@@ -10,7 +10,8 @@ import { validarCreacion, validarModificacion } from "./herramientas.dto.js";
 function zodToHttpError(zodErr) {
     const err = new Error("Datos inválidos");
     err.status = 400;
-    err.detalles = zodErr.errors.map((e) => `${e.path.join(".")}: ${e.message}`);
+    const issues = zodErr.issues ?? zodErr.errors ?? [];
+    err.detalles = issues.map((e) => `${e.path.join(".")}: ${e.message}`);
     return err;
 }
 

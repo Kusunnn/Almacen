@@ -54,6 +54,14 @@ const HerramientaBaseSchema = z.object({
         .url("El campo 'foto_herramienta' debe ser una URL válida")
         .nullable()
         .optional(),
+
+    cantidad: z
+        .number({ invalid_type_error: "El campo 'cantidad' debe ser un número" })
+        .int("El campo 'cantidad' debe ser un entero")
+        .min(0, "El campo 'cantidad' no puede ser negativo")
+        .max(32767, "El campo 'cantidad' supera el máximo permitido")
+        .nullable()
+        .optional(),
 });
 
 // ── Schema de creación ────────────────────────────────────────────────────────
@@ -74,7 +82,9 @@ export const HerramientaDtoSchema = z.object({
     fecha_ingreso: z.string().nullable(),   // YYYY-MM-DD
     disponibilidad: z.boolean().nullable(),
     id_almacen: z.number().int().nullable(),
+    almacen_nombre: z.string().nullable().optional(),
     foto_herramienta: z.string().nullable(),
+    cantidad: z.number().int().nullable(),
     tipo_nombre: z.string().nullable().optional(),
 });
 
