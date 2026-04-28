@@ -62,23 +62,34 @@ export function fromCreacionDto(dto) {
  * @returns {import('@prisma/client').Prisma.herramientasUpdateInput}
  */
 export function fromModificacionDto(dto) {
-    return {
-        nombre: dto.nombre.trim(),
-        descripcion: dto.descripcion ?? null,
-        estado: dto.estado ?? null,
-        fecha_ingreso: dto.fecha_ingreso ? new Date(dto.fecha_ingreso) : null,
-        disponibilidad: dto.disponibilidad ?? null,
-        foto_herramienta: dto.foto_herramienta ?? null,
-        cantidad: dto.cantidad ?? null,
-        // Relaciones – si vienen null se desconectan, si vienen con id se conectan
-        tipos_herramienta: dto.id_tipo
+    const data = {};
+
+    if (dto.nombre !== undefined) data.nombre = dto.nombre.trim();
+    if (dto.descripcion !== undefined) data.descripcion = dto.descripcion ?? null;
+    if (dto.estado !== undefined) data.estado = dto.estado ?? null;
+    if (dto.fecha_ingreso !== undefined) {
+        data.fecha_ingreso = dto.fecha_ingreso ? new Date(dto.fecha_ingreso) : null;
+    }
+    if (dto.disponibilidad !== undefined) data.disponibilidad = dto.disponibilidad;
+    if (dto.foto_herramienta !== undefined) data.foto_herramienta = dto.foto_herramienta ?? null;
+    if (dto.cantidad !== undefined) data.cantidad = dto.cantidad ?? null;
+
+    // Relaciones: undefined conserva, null desconecta, id conecta.
+    if (dto.id_tipo !== undefined) {
+        data.tipos_herramienta = dto.id_tipo
             ? { connect: { id: Number(dto.id_tipo) } }
-            : { disconnect: true },
-        marcas: dto.id_marca
+            : { disconnect: true };
+    }
+    if (dto.id_marca !== undefined) {
+        data.marcas = dto.id_marca
             ? { connect: { id: Number(dto.id_marca) } }
-            : { disconnect: true },
-        almacenes: dto.id_almacen
+            : { disconnect: true };
+    }
+    if (dto.id_almacen !== undefined) {
+        data.almacenes = dto.id_almacen
             ? { connect: { id: Number(dto.id_almacen) } }
-            : { disconnect: true },
-    };
+            : { disconnect: true };
+    }
+
+    return data;
 }

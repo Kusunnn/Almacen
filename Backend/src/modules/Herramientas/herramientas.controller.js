@@ -2,6 +2,7 @@
 // Maneja las peticiones HTTP y delega al service.
 // Equivalente al CategoriasController de C#.
 
+import { Prisma } from "@prisma/client";
 import * as service from "./herramientas.service.js";
 
 // ── GET /api/herramientas ─────────────────────────────────────────────────────
@@ -96,6 +97,9 @@ export async function deleteHerramienta(req, res) {
 
         return res.status(200).json({ mensaje: "Herramienta eliminada exitosamente" });
     } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2003") {
+            return res.status(409).json({ mensaje: "No se puede eliminar una herramienta en uso" });
+        }
         console.error("deleteHerramienta:", error);
         return res.status(500).json({ mensaje: "Error interno del servidor" });
     }
