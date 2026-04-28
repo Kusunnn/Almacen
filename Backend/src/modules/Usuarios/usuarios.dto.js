@@ -13,22 +13,28 @@ const correoSchema = z
 const contrasenaSchema = z.string().min(6).max(255);
 const idRolSchema = z.coerce.number().int().positive();
 const fotoPerfilSchema = z
-  .string()
-  .trim()
-  .max(2_000_000, "El campo 'fotoPerfil' es demasiado grande")
-  .refine((value) => {
-    try {
-      const url = new URL(value);
+  .preprocess((value) => {
+    if (typeof value === "string" && value.trim() === "") return null;
+    return value;
+  }, z
+    .string()
+    .trim()
+    .max(2_100_000, "El campo 'fotoPerfil' es demasiado grande")
+    .refine((value) => {
+      try {
+        const url = new URL(value);
 
-      if (url.protocol === "data:") {
-        return /^data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+$/.test(value);
+        if (url.protocol === "data:") {
+          return /^data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+$/.test(value);
+        }
+
+        return url.protocol === "http:" || url.protocol === "https:";
+      } catch {
+        return false;
       }
-
-      return url.protocol === "http:" || url.protocol === "https:";
-    } catch {
-      return false;
-    }
-  }, "El campo 'fotoPerfil' debe ser una URL válida o una imagen en base64");
+    }, "El campo 'fotoPerfil' debe ser una URL válida o una imagen en base64")
+    .nullable()
+    .optional());
 
 
 // Creacion
@@ -40,7 +46,7 @@ export const usuarioCrearDto = z.object({
   correo: correoSchema,
   contrasena: contrasenaSchema,
   idRol: idRolSchema,
-  fotoPerfil: fotoPerfilSchema.optional().nullable(),
+  fotoPerfil: fotoPerfilSchema,
 });
 
 export const usuarioLoginDto = z.object({
@@ -58,7 +64,7 @@ export const usuarioActualizarDto = z.object({
   correo: correoSchema.optional(),
   contrasena: contrasenaSchema.optional(),
   idRol: idRolSchema.optional(),
-  fotoPerfil: fotoPerfilSchema.optional().nullable(),
+  fotoPerfil: fotoPerfilSchema,
 });
 
 

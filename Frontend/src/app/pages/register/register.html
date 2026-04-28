@@ -9,6 +9,8 @@
         name="nombre"
         [(ngModel)]="form.nombre"
         placeholder="Nombre completo"
+        minlength="2"
+        maxlength="100"
         required
       />
 
@@ -28,6 +30,8 @@
         name="telefono"
         [(ngModel)]="form.telefono"
         placeholder="Teléfono"
+        minlength="7"
+        maxlength="20"
         required
       />
 
@@ -37,6 +41,8 @@
         name="direccion"
         [(ngModel)]="form.direccion"
         placeholder="Dirección"
+        minlength="5"
+        maxlength="255"
         required
       />
 
@@ -55,6 +61,8 @@
         name="contrasena"
         [(ngModel)]="form.contrasena"
         placeholder="Contraseña"
+        minlength="6"
+        maxlength="255"
         required
       />
 

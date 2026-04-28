@@ -102,8 +102,9 @@ export class Register implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.idRol === null || this.form.edad === null) {
-      this.error = 'Completa todos los campos obligatorios';
+    const validationError = this.getValidationError();
+    if (validationError) {
+      this.error = validationError;
       return;
     }
 
@@ -130,9 +131,73 @@ export class Register implements OnInit {
         },
         error: (error) => {
           this.submitting = false;
-          this.error =
-            error?.error?.mensaje ?? 'No se pudo registrar el usuario';
+          this.error = this.getApiErrorMessage(error);
         },
       });
+  }
+
+  private getValidationError(): string {
+    const nombre = this.form.nombre.trim();
+    const telefono = this.form.telefono.trim();
+    const direccion = this.form.direccion.trim();
+    const correo = this.form.correo.trim();
+    const contrasena = this.form.contrasena;
+
+    if (
+      !nombre ||
+      this.form.edad === null ||
+      !telefono ||
+      !direccion ||
+      !correo ||
+      !contrasena ||
+      this.form.idRol === null
+    ) {
+      return 'Completa todos los campos obligatorios';
+    }
+
+    if (nombre.length < 2) {
+      return 'El nombre debe tener al menos 2 caracteres';
+    }
+
+    if (Number(this.form.edad) < 0 || Number(this.form.edad) > 120) {
+      return 'La edad debe estar entre 0 y 120';
+    }
+
+    if (telefono.length < 7 || telefono.length > 20) {
+      return 'El teléfono debe tener entre 7 y 20 caracteres';
+    }
+
+    if (direccion.length < 5 || direccion.length > 255) {
+      return 'La dirección debe tener entre 5 y 255 caracteres';
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+      return 'Ingresa un correo válido';
+    }
+
+    if (contrasena.length < 6) {
+      return 'La contraseña debe tener al menos 6 caracteres';
+    }
+
+    return '';
+  }
+
+  private getApiErrorMessage(error: any): string {
+    const body = error?.error;
+
+    if (Array.isArray(body?.errores) && body.errores.length > 0) {
+      return body.errores
+        .map((item: { campo?: string; mensaje?: string }) =>
+          item.campo ? `${item.campo}: ${item.mensaje}` : item.mensaje
+        )
+        .filter(Boolean)
+        .join('. ');
+    }
+
+    if (Array.isArray(body?.detalles) && body.detalles.length > 0) {
+      return body.detalles.join('. ');
+    }
+
+    return body?.mensaje ?? 'No se pudo registrar el usuario';
   }
 }
