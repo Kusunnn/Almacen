@@ -1,6 +1,58 @@
-<p>HOLA MUNDOOOOO!</p>
-<div>
-    <button class="btn btn-primary" routerLink="/herramientas">Herramientas u-u</button>
-    <button class="btn btn-primary" routerLink="/usuarios">Usuarios u-u</button>
-    <button class="btn btn-primary" routerLink="/login" (click)="logout()">Cerrar sesión</button>
+<div class="dashboard">
+  <div class="content-header">
+    <h1>Dashboard</h1>
+    <p class="subtitle">Bienvenido, {{ userName }}</p>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- Card: Herramientas -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">📦 Herramientas</h3>
+        <span class="card-badge">{{ toolStats.total }}</span>
+      </div>
+      <div class="card-body">
+        <div class="stat-item">
+          <span class="stat-label">Disponibles</span>
+          <span class="stat-value available">{{ toolStats.available }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Mantenimiento</span>
+          <span class="stat-value unavailable">{{ toolStats.unavailable }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Reservadas</span>
+          <span class="stat-value borrowed">{{ toolStats.borrowed }}</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button routerLink="/herramientas" class="btn-link">Ver todas →</button>
+      </div>
+    </div>
+
+    <!-- Card: Historial Reciente -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">📋 Historial Reciente</h3>
+        <span class="card-badge">{{ historialStats.total }}</span>
+      </div>
+      <div class="card-body">
+        <div class="history-list" *ngIf="recentHistory.length > 0">
+          <div class="history-item" *ngFor="let item of recentHistory | slice:0:3">
+            <div class="history-icon">{{ getHistoryIcon(item.tipo) }}</div>
+            <div class="history-info">
+              <p class="history-action">{{ item.tipo }}</p>
+              <p class="history-date">{{ item.fecha | date:'short' }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="recentHistory.length === 0">
+          <p>No hay historial disponible</p>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button routerLink="/historial" class="btn-link">Ver historial completo →</button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -1,0 +1,28 @@
+@use '../styles/variables' as *;
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background: $color-bg-dark;
+}
+
+.app-content {
+  flex: 1;
+  margin-left: 280px;
+  overflow-y: auto;
+  transition: margin-left $transition-fast;
+
+  &.sidebar-collapsed {
+    margin-left: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-content {
+    margin-left: 70px;
+
+    &.sidebar-collapsed {
+      margin-left: 70px;
+    }
+  }
+}

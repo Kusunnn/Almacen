@@ -1,1 +1,198 @@
 @use '../../../styles/variables' as *;
+
+.dashboard {
+  padding: $padding-lg;
+  min-height: 100vh;
+  background: $color-bg-dark;
+  color: $color-text;
+}
+
+.content-header {
+  margin-bottom: 28px;
+
+  h1 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  .subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: $color-text-secondary;
+  }
+}
+
+// ============================================
+// DASHBOARD GRID
+// ============================================
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+// ============================================
+// CARD STYLES
+// ============================================
+.card {
+  background: $color-primary;
+  border-radius: $radius-md;
+  border: 1px solid $color-bg-light;
+  overflow: hidden;
+  transition: transform $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  .card-header {
+    padding: $padding-md;
+    background: $color-bg-light;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid $color-bg-light;
+
+    .card-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: $color-text;
+    }
+
+    .card-badge {
+      background: $color-action-primary;
+      color: $color-bg-dark;
+      padding: 4px 12px;
+      border-radius: $radius-md;
+      font-weight: 700;
+      font-size: 12px;
+    }
+  }
+
+  .card-body {
+    padding: $padding-md;
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid $color-bg-light;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .stat-label {
+        color: $color-text-secondary;
+        font-weight: 500;
+        font-size: 13px;
+      }
+
+      .stat-value {
+        font-size: 18px;
+        font-weight: 700;
+
+        &.available {
+          color: $color-success;
+        }
+
+        &.unavailable {
+          color: $color-action-secondary;
+        }
+
+        &.borrowed {
+          color: $color-action-primary;
+        }
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: $padding-lg;
+      color: $color-text-secondary;
+
+      p {
+        margin: 0;
+        font-size: 13px;
+      }
+    }
+
+    .history-list {
+      .history-item {
+        display: flex;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid $color-bg-light;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .history-icon {
+          font-size: 16px;
+          min-width: 20px;
+        }
+
+        .history-info {
+          flex: 1;
+
+          .history-action {
+            margin: 0 0 4px 0;
+            color: $color-text;
+            font-weight: 500;
+            font-size: 13px;
+          }
+
+          .history-date {
+            margin: 0;
+            font-size: 12px;
+            color: $color-text-secondary;
+          }
+        }
+      }
+    }
+  }
+
+  .card-footer {
+    padding: $padding-md;
+    background: $color-bg-light;
+    border-top: 1px solid $color-bg-light;
+
+    .btn-link {
+      background: none;
+      border: none;
+      color: $color-action-primary;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: $transition-fast;
+
+      &:hover {
+        color: $color-action-secondary;
+      }
+    }
+  }
+}
+
+// ============================================
+// RESPONSIVE DESIGN
+// ============================================
+@media (max-width: 768px) {
+  .dashboard {
+    padding: $padding-md;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .content-header h1 {
+    font-size: 20px;
+  }
+}
