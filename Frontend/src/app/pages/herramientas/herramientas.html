@@ -58,10 +58,23 @@
       </div>
 
       <article class="tool-card card" *ngFor="let tool of filteredTools()">
+        
+        <!-- 🔥 AQUÍ ESTÁ EL FIX -->
         <div
           class="thumb"
           role="img"
           [attr.aria-label]="'Imagen ' + tool.modelName">
+
+          <img
+            *ngIf="tool.imageUrl"
+            [src]="tool.imageUrl"
+            alt="herramienta"
+          />
+
+          <div *ngIf="!tool.imageUrl" class="placeholder">
+            {{ tool.modelName[0] }}
+          </div>
+
         </div>
 
         <div class="info">
@@ -95,7 +108,7 @@
 
           </button>
         </div>
-      </article>
+      </article>  
 
       <div *ngIf="!loading && !error && filteredTools().length === 0"
            class="no-results">
