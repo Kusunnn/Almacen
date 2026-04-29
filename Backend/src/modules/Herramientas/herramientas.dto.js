@@ -76,7 +76,7 @@ export const HerramientaDtoSchema = z.object({
     nombre: z.string(),
     descripcion: z.string().nullable(),
     id_tipo: z.number().int().nullable(),
-    id_marca: z.number().int().nullable(),
+    id_marca: z.number().int().nullable(),  
     marca_nombre: z.string().nullable().optional(),
     estado: z.string().nullable(),
     fecha_ingreso: z.string().nullable(),   // YYYY-MM-DD
