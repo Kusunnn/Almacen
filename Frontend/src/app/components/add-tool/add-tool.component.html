@@ -1,0 +1,187 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onCancel()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <header class="modal-header">
+      <h2 class="modal-title">Agregar Herramienta</h2>
+      <button class="modal-close" (click)="onCancel()" aria-label="Cerrar modal">
+        ✕
+      </button>
+    </header>
+
+    <div class="modal-body">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+        <!-- Error message -->
+        <div class="error-message" *ngIf="submitError">
+          {{ submitError }}
+        </div>
+
+        <!-- Row 1: Nombre -->
+        <div class="form-group full-width">
+          <label for="nombre" class="label">
+            Nombre <span class="required">*</span>
+          </label>
+          <input
+            id="nombre"
+            type="text"
+            class="input-base"
+            placeholder="Nombre de la herramienta"
+            formControlName="nombre"
+            [attr.aria-invalid]="
+              form.get('nombre')?.invalid && form.get('nombre')?.touched
+            " />
+          <div
+            class="error"
+            *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+            <span *ngIf="form.get('nombre')?.errors?.['required']"
+              >El nombre es requerido</span>
+            <span *ngIf="form.get('nombre')?.errors?.['minlength']"
+              >Mínimo 2 caracteres</span>
+          </div>
+        </div>
+
+        <!-- Row 2: Descripción (full width) -->
+        <div class="form-group full-width">
+          <label for="descripcion" class="label">Descripción</label>
+          <textarea
+            id="descripcion"
+            class="input-base"
+            placeholder="Descripción opcional de la herramienta"
+            formControlName="descripcion"
+            rows="3"></textarea>
+        </div>
+
+        <!-- Row 3: Tipo - Marca -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="id_tipo" class="label">Tipo de Herramienta</label>
+            <select id="id_tipo" class="input-base" formControlName="id_tipo">
+              <option value="">Seleccionar tipo...</option>
+              <option *ngFor="let type of toolTypes" [value]="type.id">
+                {{ type.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="id_marca" class="label">Marca</label>
+            <select id="id_marca" class="input-base" formControlName="id_marca">
+              <option value="">Seleccionar marca...</option>
+              <option *ngFor="let brand of brands" [value]="brand.id">
+                {{ brand.nombre }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 4: Estado - Fecha de ingreso -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="estado" class="label">Estado</label>
+            <select id="estado" class="input-base" formControlName="estado">
+              <option value="disponible">Disponible</option>
+              <option value="mantenimiento">Mantenimiento</option>
+              <option value="reparacion">Reparación</option>
+              <option value="descartado">Descartado</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="fecha_ingreso" class="label">Fecha de Ingreso</label>
+            <input
+              id="fecha_ingreso"
+              type="date"
+              class="input-base"
+              formControlName="fecha_ingreso" />
+          </div>
+        </div>
+
+        <!-- Row 5: Disponibilidad - Almacén -->
+        <div class="form-row">
+          <div class="form-group checkbox-group">
+            <label class="label">
+              <input
+                type="checkbox"
+                class="checkbox"
+                formControlName="disponibilidad" />
+              <span class="checkbox-label">Disponible</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="id_almacen" class="label">Almacén</label>
+            <select id="id_almacen" class="input-base" formControlName="id_almacen">
+              <option value="">Seleccionar almacén...</option>
+              <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">
+                {{ warehouse.nombre }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 6: Cantidad -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cantidad" class="label">Cantidad</label>
+            <input
+              id="cantidad"
+              type="number"
+              class="input-base"
+              placeholder="0"
+              formControlName="cantidad"
+              min="0" />
+          </div>
+        </div>
+
+        <!-- Row 7: Foto de herramienta -->
+        <div class="form-group full-width">
+          <label class="label">Foto de Herramienta</label>
+
+          <!-- File input -->
+          <div class="file-input-wrapper">
+            <input
+              #photoInput
+              type="file"
+              class="file-input"
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              aria-label="Seleccionar archivo" />
+            <button
+              type="button"
+              class="file-button"
+              (click)="photoInput.click()">
+              Seleccionar archivo
+            </button>
+            <span class="file-name" *ngIf="imageFileName">
+              {{ imageFileName }}
+            </span>
+            <button
+              type="button"
+              class="file-delete"
+              *ngIf="imageFileName"
+              (click)="removeImage()"
+              title="Eliminar imagen">
+              ✕
+            </button>
+          </div>
+
+          <!-- Preview -->
+          <div class="image-preview" *ngIf="imagePreview">
+            <img [src]="imagePreview" alt="Vista previa de la imagen" />
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <footer class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="onCancel()">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="onSubmit()"
+        [disabled]="loading || form.invalid">
+        {{ loading ? 'Creando...' : 'Crear' }}
+      </button>
+    </footer>
+  </div>
+</div>

@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
 import { ToolsService } from '../../services/tools.service';
 import { ToolUnit } from '../../models/tool.model';
+import { AddToolComponent } from '../../components/add-tool/add-tool.component';
 
 @Component({
   selector: 'app-herramientas',
-  imports: [CommonModule],
+  imports: [CommonModule, AddToolComponent],
   standalone: true,
   templateUrl: './herramientas.html',
   styleUrls: ['./herramientas.scss'],
@@ -20,12 +21,21 @@ export class Herramientas implements OnInit {
   loading = true;
   error = '';
 
+  isAddToolModalOpen = false;
+
   constructor(
     private readonly toolsService: ToolsService,
     private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
+    this.loadTools();
+  }
+
+  private loadTools() {
+    this.loading = true;
+    this.error = '';
+
     this.toolsService
       .getAllUnits()
       .pipe(
@@ -93,5 +103,17 @@ export class Herramientas implements OnInit {
 
   onSearch(event: any) {
     this.searchText = event.target.value;
+  }
+
+  openAddToolModal() {
+    this.isAddToolModalOpen = true;
+  }
+
+  closeAddToolModal() {
+    this.isAddToolModalOpen = false;
+  }
+
+  onToolCreated() {
+    this.loadTools();
   }
 }

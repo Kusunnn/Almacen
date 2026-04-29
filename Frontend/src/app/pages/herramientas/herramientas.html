@@ -4,7 +4,7 @@
     <header class="tools-header">
       <div class="title-row">
         <h1>Herramientas</h1>
-        <button class="btn btn-primary">
+        <button class="btn btn-primary" (click)="openAddToolModal()">
           + Agregar Herramienta
         </button>
       </div>
@@ -105,3 +105,10 @@
 
   </div>
 </div>
+
+<!-- Modal para agregar herramienta -->
+<app-add-tool
+  [isOpen]="isAddToolModalOpen"
+  (closed)="closeAddToolModal()"
+  (created)="onToolCreated()">
+</app-add-tool>

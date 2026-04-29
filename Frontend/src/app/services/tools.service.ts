@@ -19,11 +19,43 @@ interface ApiTool {
   foto_herramienta: string | null;
 }
 
+export interface ToolType {
+  id: number;
+  nombre: string;
+}
+
+export interface Brand {
+  id: number;
+  nombre: string;
+}
+
+export interface Warehouse {
+  id: number;
+  nombre: string;
+  telefono?: string;
+  direccion?: string;
+}
+
+export interface CreateToolRequest {
+  nombre: string;
+  descripcion?: string | null;
+  id_tipo?: number | null;
+  id_marca?: number | null;
+  estado?: string | null;
+  fecha_ingreso?: string | null;
+  disponibilidad?: boolean | null;
+  id_almacen?: number | null;
+  foto_herramienta?: string | null;
+  cantidad?: number | null;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ToolsService {
   private readonly http = inject(HttpClient);
+
+  // ─── Herramientas ─────────────────────────────────────────────────────────
 
   getAllUnits(): Observable<ToolUnit[]> {
     return this.http.get<ApiTool[]>(`${API_BASE_URL}/herramientas`).pipe(
@@ -31,6 +63,34 @@ export class ToolsService {
       map((tools) => tools.map((tool) => this.mapTool(tool)))
     );
   }
+
+  createTool(data: CreateToolRequest): Observable<ApiTool> {
+    return this.http.post<ApiTool>(`${API_BASE_URL}/herramientas`, data).pipe(
+      timeout(5000)
+    );
+  }
+
+  // ─── Catálogos ────────────────────────────────────────────────────────────
+
+  getToolTypes(): Observable<ToolType[]> {
+    return this.http.get<ToolType[]>(`${API_BASE_URL}/tipos-herramienta`).pipe(
+      timeout(5000)
+    );
+  }
+
+  getBrands(): Observable<Brand[]> {
+    return this.http.get<Brand[]>(`${API_BASE_URL}/marcas`).pipe(
+      timeout(5000)
+    );
+  }
+
+  getWarehouses(): Observable<Warehouse[]> {
+    return this.http.get<Warehouse[]>(`${API_BASE_URL}/almacenes`).pipe(
+      timeout(5000)
+    );
+  }
+
+  // ─── Estadísticas ────────────────────────────────────────────────────────
 
   getTotalCount(tools: ToolUnit[]): number {
     return tools.length;
@@ -43,6 +103,8 @@ export class ToolsService {
   getLowStockCount(tools: ToolUnit[]): number {
     return tools.filter((tool) => tool.status !== 'available').length;
   }
+
+  // ─── Mapeos internos ──────────────────────────────────────────────────────
 
   private mapTool(tool: ApiTool): ToolUnit {
     return {
