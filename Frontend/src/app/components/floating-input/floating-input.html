@@ -1,0 +1,38 @@
+<div class="floating-input-wrapper">
+  <div class="input-container">
+    <input
+      #input
+      class="floating-input"
+      [type]="type"
+      [value]="value"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [class.has-value]="value"
+      [class.has-error]="hasError"
+      (input)="onInputChange($event)"
+      (focus)="onFocus()"
+    />
+    <label class="floating-label" *ngIf="label">{{ label }}</label>
+    <div class="input-underline"></div>
+
+    <button
+      *ngIf="icon"
+      type="button"
+      class="icon-button"
+      (click)="onIconClick()"
+      [attr.aria-label]="icon"
+    >
+      <svg *ngIf="icon === 'eye'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M1 12S5 6 12 6S23 12 23 12S19 18 12 18S1 12 1 12Z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+      <svg *ngIf="icon === 'eye-off'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 3L21 21M9.88 9.88A3 3 0 0 0 12 15A3 3 0 0 0 14.12 14.12M17.94 17.94A10.07 10.07 0 0 1 12 20C7 20 2.73 16.46 1 11.3A9.976 9.976 0 0 1 5.06 6.06" />
+      </svg>
+    </button>
+  </div>
+
+  <span class="error-message" *ngIf="hasError && errorMessage">
+    {{ errorMessage }}
+  </span>
+</div>

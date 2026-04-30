@@ -1,32 +1,109 @@
-<div class="flex flex-center" style="height:100vh;">
-  <div class="card login-card">
-    <h2>Iniciar sesión</h2>
-    <form (ngSubmit)="onSubmit()" class="login-form">
-      <input
-        class="input-base"
-        type="email"
-        name="correo"
-        [(ngModel)]="credentials.correo"
-        placeholder="Correo"
-        required
-      />
+<div class="login-container">
+  <!-- Fondo con gradiente -->
+  <div class="bg-gradient"></div>
 
-      <input
-        class="input-base"
-        type="password"
-        name="contrasena"
-        [(ngModel)]="credentials.contrasena"
-        placeholder="Contraseña"
-        required
-      />
+  <!-- Contenedor principal -->
+  <div class="login-wrapper">
+    <!-- Card de login -->
+    <div class="login-card">
+      <!-- Header -->
+      <div class="login-header">
+        <div class="logo-circle">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7L2 12C2 18 12 22 12 22S22 18 22 12L22 7L12 2Z" />
+          </svg>
+        </div>
+        <h1 class="login-title">Almacén</h1>
+        <p class="login-subtitle">Sistema de gestión de herramientas</p>
+      </div>
 
-      <button class="btn btn-primary" type="submit" [disabled]="loading">
-        {{ loading ? 'Entrando...' : 'Entrar' }}
-      </button>
+      <!-- Formulario -->
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form" @fadeInUp>
+        <!-- Campo Correo -->
+        <div class="form-group">
+          <div class="input-wrapper">
+            <input
+              #emailInput
+              class="floating-input"
+              type="email"
+              formControlName="correo"
+              [class.has-value]="form.get('correo')?.value"
+              [class.has-error]="getFieldError('correo')"
+              autocomplete="email"
+            />
+            <label class="floating-label" [for]="emailInput">Correo electrónico</label>
+            <div class="input-underline"></div>
+          </div>
+          <span class="error-message" *ngIf="getFieldError('correo')">
+            {{ getFieldError('correo') }}
+          </span>
+        </div>
 
-      <a class="register-link" routerLink="/register">Crear usuario</a>
+        <!-- Campo Contraseña -->
+        <div class="form-group">
+          <div class="input-wrapper">
+            <input
+              #passwordInput
+              class="floating-input"
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="contrasena"
+              [class.has-value]="form.get('contrasena')?.value"
+              [class.has-error]="getFieldError('contrasena')"
+              autocomplete="current-password"
+            />
+            <label class="floating-label" [for]="passwordInput">Contraseña</label>
+            <button
+              type="button"
+              class="toggle-password"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            >
+              <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12S5 6 12 6S23 12 23 12S19 18 12 18S1 12 1 12Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3L21 21M9.88 9.88A3 3 0 0 0 12 15A3 3 0 0 0 14.12 14.12M17.94 17.94A10.07 10.07 0 0 1 12 20C7 20 2.73 16.46 1 11.3A9.976 9.976 0 0 1 5.06 6.06" />
+              </svg>
+            </button>
+            <div class="input-underline"></div>
+          </div>
+          <span class="error-message" *ngIf="getFieldError('contrasena')">
+            {{ getFieldError('contrasena') }}
+          </span>
+        </div>
 
-      <div *ngIf="error" class="error">{{ error }}</div>
-    </form>
+        <!-- Mensaje de error general -->
+        <div class="error-banner" *ngIf="error" @slideDown>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <span>{{ error }}</span>
+        </div>
+
+        <!-- Botón de envío -->
+        <button
+          type="submit"
+          class="submit-button"
+          [disabled]="loading"
+          [class.loading]="loading"
+        >
+          <span class="button-text">{{ loading ? 'Iniciando sesión...' : 'Iniciar sesión' }}</span>
+          <span class="button-loader" *ngIf="loading">
+            <span class="spinner"></span>
+          </span>
+        </button>
+
+        <!-- Registro -->
+        <p class="register-prompt">
+          ¿No tienes cuenta? <a routerLink="/register" class="register-link">Regístrate aquí</a>
+        </p>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <p class="footer-text">© 2024 Sistema de Almacén. Todos los derechos reservados.</p>
   </div>
 </div>

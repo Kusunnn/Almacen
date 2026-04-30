@@ -1,0 +1,176 @@
+@use '../../../styles/variables' as *;
+
+.floating-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-container {
+  position: relative;
+  width: 100%;
+}
+
+.floating-input {
+  width: 100%;
+  height: 48px;
+  padding: 16px 12px 8px 12px;
+  background-color: rgba($color-bg-dark, 0.5);
+  border: 1px solid rgba($color-text-secondary, 0.2);
+  border-radius: $radius-md;
+  color: $color-text;
+  font-size: 15px;
+  font-family: inherit;
+  transition: all $transition-fast;
+  position: relative;
+  z-index: 1;
+
+  &::placeholder {
+    color: transparent;
+  }
+
+  &:focus {
+    background-color: rgba($color-bg-dark, 0.8);
+    border-color: $color-action-primary;
+    outline: none;
+    box-shadow: 
+      0 0 0 3px rgba($color-action-primary, 0.1),
+      0 8px 24px rgba($color-action-primary, 0.15);
+
+    & ~ .floating-label {
+      transform: translateY(-24px) scale(0.85);
+      color: $color-action-primary;
+    }
+
+    & ~ .input-underline {
+      width: 100%;
+      background: $color-action-primary;
+    }
+  }
+
+  &.has-value {
+    & ~ .floating-label {
+      transform: translateY(-24px) scale(0.85);
+      color: $color-action-primary;
+    }
+  }
+
+  &.has-error {
+    border-color: $color-error;
+    background-color: rgba($color-error, 0.05);
+
+    &:focus {
+      box-shadow: 
+        0 0 0 3px rgba($color-error, 0.1),
+        0 8px 24px rgba($color-error, 0.15);
+      border-color: $color-error;
+    }
+
+    & ~ .floating-label {
+      color: $color-error;
+    }
+
+    & ~ .input-underline {
+      background: $color-error;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.floating-label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $color-text-secondary;
+  font-size: 15px;
+  font-weight: 500;
+  pointer-events: none;
+  transition: all $transition-fast;
+  transform-origin: left center;
+  z-index: 0;
+}
+
+.input-underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: $color-action-primary;
+  transition: width $transition-fast;
+  border-radius: 2px;
+}
+
+.icon-button {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  color: $color-text-secondary;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-fast;
+  z-index: 2;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    color: $color-action-primary;
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+}
+
+.error-message {
+  font-size: 12px;
+  color: $color-error;
+  display: block;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .floating-input {
+    height: 44px;
+    font-size: 14px;
+
+    &:focus ~ .floating-label {
+      transform: translateY(-22px) scale(0.85);
+    }
+
+    &.has-value ~ .floating-label {
+      transform: translateY(-22px) scale(0.85);
+    }
+  }
+
+  .floating-label {
+    font-size: 13px;
+  }
+}

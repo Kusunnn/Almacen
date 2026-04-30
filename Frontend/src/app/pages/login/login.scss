@@ -1,40 +1,285 @@
 @use '../../../styles/variables' as *;
 
-:host {
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 50% { opacity: 0.7; } }
+
+:host { display: block; width: 100%; height: 100vh; }
+
+.login-container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: $color-bg-dark; }
+
+.bg-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, $color-bg-dark 0%, $color-bg-light 50%, $color-bg-dark 100%);
+  opacity: 0.3;
+  z-index: 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba($color-action-primary, 0.1) 0%, transparent 70%);
+    top: -200px;
+    right: -200px;
+    border-radius: 50%;
+    animation: pulse 8s ease-in-out infinite;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba($color-action-secondary, 0.08) 0%, transparent 70%);
+    bottom: -200px;
+    left: -200px;
+    border-radius: 50%;
+    animation: pulse 10s ease-in-out infinite 1s;
+  }
+}
+
+.login-wrapper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  padding: 0 $padding-lg;
   display: flex;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: 2rem;
+  animation: fadeInUp 0.8s ease-out;
 }
 
 .login-card {
-  /* the .card utility is applied via class in the template */
-  width: 90%;
-  max-width: 360px;
-  padding: 2rem;
+  background: linear-gradient(135deg, rgba($color-bg-light, 0.8), rgba($color-bg-dark, 0.9));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $radius-lg;
+  padding: 3rem 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba($color-action-primary, 0.3), transparent);
+  }
 }
 
-.login-card h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
+.login-header { text-align: center; margin-bottom: 2.5rem; animation: fadeInUp 0.8s ease-out 0.1s both; }
 
-.login-form {
+.logo-circle {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  background: linear-gradient(135deg, $color-action-primary, $color-action-secondary);
+  border-radius: 50%;
   display: flex;
-  flex-direction: column;
-  gap: $padding-md;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba($color-action-primary, 0.3);
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+
+  .logo-icon { width: 32px; height: 32px; color: #000; }
 }
 
-/* Inputs and buttons already use the global utility classes via the template */
+.login-title { font-size: 28px; font-weight: 600; color: $color-text; margin: 0; letter-spacing: -0.5px; }
+.login-subtitle { font-size: 13px; color: $color-text-secondary; margin: 0.5rem 0 0; }
 
-.error {
+.login-form { display: flex; flex-direction: column; gap: 1.5rem; animation: fadeInUp 0.8s ease-out 0.2s both; }
+.form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.input-wrapper { position: relative; }
+
+.floating-input {
+  width: 100%;
+  height: 48px;
+  padding: 16px 12px 8px 12px;
+  background-color: rgba($color-bg-dark, 0.5);
+  border: 1px solid rgba($color-text-secondary, 0.2);
+  border-radius: $radius-md;
+  color: $color-text;
+  font-size: 15px;
+  font-family: inherit;
+  transition: all $transition-fast;
+  position: relative;
+  z-index: 1;
+
+  &::placeholder { color: transparent; }
+
+  &:focus {
+    background-color: rgba($color-bg-dark, 0.8);
+    border-color: $color-action-primary;
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba($color-action-primary, 0.1);
+
+    ~ .floating-label { transform: translateY(-24px) scale(0.85); color: $color-action-primary; }
+    ~ .input-underline { width: 100%; background: $color-action-primary; }
+  }
+
+  &.has-value ~ .floating-label { transform: translateY(-24px) scale(0.85); color: $color-action-primary; }
+
+  &.has-error {
+    border-color: $color-error;
+    background-color: rgba($color-error, 0.05);
+    &:focus { box-shadow: 0 0 0 3px rgba($color-error, 0.1); border-color: $color-error; }
+    ~ .floating-label { color: $color-error; }
+    ~ .input-underline { background: $color-error; }
+  }
+}
+
+.floating-label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $color-text-secondary;
+  font-size: 15px;
+  font-weight: 500;
+  pointer-events: none;
+  transition: all $transition-fast;
+  transform-origin: left center;
+  z-index: 0;
+}
+
+.input-underline { position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background-color: $color-action-primary; transition: width $transition-fast; border-radius: 2px; }
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  background: 0;
+  border: 0;
+  color: $color-text-secondary;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-fast;
+  z-index: 2;
+
+  svg { width: 20px; height: 20px; }
+  &:hover { color: $color-action-primary; transform: translateY(-50%) scale(1.1); }
+  &:active { transform: translateY(-50%) scale(0.95); }
+}
+
+.error-message { font-size: 12px; color: $color-error; margin-top: 0.25rem; display: block; animation: slideDown 0.3s ease-out; }
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 12px 14px;
+  background-color: rgba($color-error, 0.1);
+  border: 1px solid rgba($color-error, 0.3);
+  border-radius: $radius-md;
   color: $color-error;
-  margin-top: $padding-sm;
-  text-align: center;
+  font-size: 13px;
+  animation: slideDown 0.3s ease-out;
+
+  svg { width: 18px; height: 18px; flex-shrink: 0; }
 }
 
-.register-link {
-  text-align: center;
-  color: inherit;
-  text-decoration: underline;
+.form-options { display: flex; justify-content: space-between; align-items: center; margin: 0.5rem 0; font-size: 13px; }
+
+.remember-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    display: none;
+    &:checked ~ .checkbox-custom {
+      background: linear-gradient(135deg, $color-action-primary, $color-action-secondary);
+      border-color: $color-action-primary;
+      &::after { opacity: 1; transform: translateY(-50%) scale(1); }
+    }
+  }
+
+  .checkbox-custom {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid rgba($color-text-secondary, 0.3);
+    border-radius: 4px;
+    background-color: rgba($color-bg-dark, 0.5);
+    transition: all $transition-fast;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &::after { content: '✓'; color: #000; font-size: 12px; font-weight: 600; opacity: 0; transform: translateY(-50%) scale(0.5); transition: all $transition-fast; }
+    &:hover { border-color: $color-action-primary; }
+  }
+
+  .checkbox-label { color: $color-text-secondary; }
+  &:hover .checkbox-label { color: $color-text; }
+}
+
+.forgot-password { color: $color-action-primary; text-decoration: none; font-weight: 500; transition: all $transition-fast; &:hover { color: $color-action-secondary; } }
+
+.submit-button {
+  height: 48px;
+  background: linear-gradient(135deg, $color-action-primary, $color-action-secondary);
+  border: 0;
+  border-radius: $radius-md;
+  color: #000;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  margin-top: 0.5rem;
+  box-shadow: 0 8px 24px rgba($color-action-primary, 0.3);
+
+  .button-text { transition: all $transition-fast; }
+
+  &:not(.loading):hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba($color-action-primary, 0.4); }
+  &:not(.loading):active { transform: translateY(0); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  &.loading .button-text { opacity: 0; }
+  &.loading .button-loader { opacity: 1; }
+}
+
+.button-loader { position: absolute; display: flex; align-items: center; justify-content: center; }
+
+.spinner { width: 20px; height: 20px; border: 2px solid rgba(0, 0, 0, 0.2); border-radius: 50%; border-top-color: #000; animation: spin 0.8s linear infinite; }
+
+.register-prompt { text-align: center; font-size: 13px; color: $color-text-secondary; margin: 0.5rem 0 0; }
+.register-link { color: $color-action-primary; text-decoration: none; font-weight: 600; transition: color $transition-fast; &:hover { color: $color-action-secondary; } }
+.footer-text { text-align: center; font-size: 11px; color: $color-text-secondary; margin: 0; opacity: 0.7; }
+
+@media (max-width: 600px) {
+  .login-wrapper { max-width: 100%; padding: 0 $padding-md; }
+  .login-card { padding: 2rem 1.5rem; }
+  .logo-circle { width: 52px; height: 52px; .logo-icon { width: 28px; height: 28px; } }
+  .login-title { font-size: 24px; }
+  .login-subtitle { font-size: 12px; }
+  .form-options { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .login-card { padding: 1.5rem 1rem; }
+  .logo-circle { width: 48px; height: 48px; }
+  .login-title { font-size: 22px; }
+  .floating-input { height: 44px; font-size: 14px; }
+  .floating-label { font-size: 13px; }
+  .submit-button { height: 44px; font-size: 14px; }
 }

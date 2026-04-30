@@ -1,0 +1,19 @@
+<button
+  class="premium-button"
+  [class.primary]="variant === 'primary'"
+  [class.secondary]="variant === 'secondary'"
+  [class.outline]="variant === 'outline'"
+  [class.sm]="size === 'sm'"
+  [class.lg]="size === 'lg'"
+  [class.full-width]="fullWidth"
+  [class.loading]="loading"
+  [disabled]="disabled || loading"
+  (click)="onClick()"
+>
+  <span class="button-text">
+    <ng-content></ng-content>
+  </span>
+  <span class="button-loader" *ngIf="loading">
+    <span class="spinner"></span>
+  </span>
+</button>
