@@ -17,6 +17,7 @@ export function toPrestamoDto(prestamo) {
     fecha_devolucion_real: toIsoOrNull(prestamo.fecha_devolucion_real),
     estado: prestamo.estado ?? null,
     observaciones: prestamo.observaciones ?? null,
+    cantidad: prestamo.cantidad ?? null,
     usuario: prestamo.usuarios
       ? {
           id: prestamo.usuarios.id,
@@ -52,6 +53,7 @@ export function fromCreacionDto(dto) {
       : null,
     estado: dto.estado ?? "activo",
     observaciones: dto.observaciones ?? null,
+    cantidad: dto.cantidad ?? 1,
   };
 }
 
@@ -75,6 +77,7 @@ export function fromModificacionDto(dto) {
   }
   if (dto.estado !== undefined) data.estado = dto.estado;
   if (dto.observaciones !== undefined) data.observaciones = dto.observaciones;
+  if (dto.cantidad !== undefined) data.cantidad = dto.cantidad;
 
   return data;
 }

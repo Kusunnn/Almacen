@@ -87,6 +87,7 @@ model prestamos {
   fecha_devolucion_real     DateTime?     @db.Timestamptz(6)
   estado                    String?       @default("activo")
   observaciones             String?
+  cantidad                  Int?          @db.SmallInt
   herramientas              herramientas? @relation(fields: [id_herramienta], references: [id], onDelete: NoAction, onUpdate: NoAction)
   usuarios                  usuarios?     @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

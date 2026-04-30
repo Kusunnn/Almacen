@@ -13,6 +13,7 @@ const PrestamoBaseSchema = z.object({
   fecha_devolucion_real: fechaIsoDateTime.optional().nullable(),
   estado: z.string().trim().min(2).max(50).optional().nullable(),
   observaciones: z.string().trim().max(1000).optional().nullable(),
+  cantidad: z.coerce.number().int().positive().optional().nullable(),
 });
 
 export const PrestamoCreacionSchema = PrestamoBaseSchema;
@@ -29,6 +30,7 @@ export const PrestamoDtoSchema = z.object({
   fecha_devolucion_real: z.string().nullable(),
   estado: z.string().nullable(),
   observaciones: z.string().nullable(),
+  cantidad: z.number().int().nullable(),
   usuario: z
     .object({
       id: z.number().int(),
