@@ -133,6 +133,7 @@ export class ToolsService {
       location: tool.id_almacen ? `Almacén ${tool.id_almacen}` : 'Sin almacén',
       imageUrl: tool.foto_herramienta,
       description: tool.descripcion,
+      cantidad: tool.cantidad,
     };
   }
 

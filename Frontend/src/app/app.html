@@ -1,6 +1,6 @@
-<div class="app-layout">
-  <app-sidebar></app-sidebar>
-  <main class="app-content">
+<div class="app-layout" [class.has-sidebar]="showSidebar()">
+  <app-sidebar *ngIf="showSidebar()"></app-sidebar>
+  <main class="app-content" [class.sidebar-visible]="showSidebar()">
     <router-outlet></router-outlet>
   </main>
 </div>

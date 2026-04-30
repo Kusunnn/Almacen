@@ -5,6 +5,11 @@ import { AuthUser } from '../models/auth.model';
 import { PrestamoUsuario, UserProfileView, UserTool } from '../models/user.model';
 import { API_BASE_URL } from './api.config';
 
+interface ApiListResponse<T> {
+  value: T;
+  Count?: number;
+}
+
 interface CreateUserPayload {
   nombre: string;
   edad: number;
@@ -46,9 +51,14 @@ export class UsersService {
       usuario: this.http
         .get<AuthUser>(`${API_BASE_URL}/usuarios/${userId}`)
         .pipe(timeout(5000)),
-      prestamos: this.http.get<PrestamoUsuario[]>(`${API_BASE_URL}/prestamos`, {
-        params: prestamosParams,
-      }).pipe(timeout(5000)),
+      prestamos: this.http
+        .get<PrestamoUsuario[] | ApiListResponse<PrestamoUsuario[]>>(`${API_BASE_URL}/prestamos`, {
+          params: prestamosParams,
+        })
+        .pipe(
+          timeout(5000),
+          map((response) => (Array.isArray(response) ? response : response.value ?? []))
+        ),
     }).pipe(
       map(({ usuario, prestamos }) => ({
         id: `USR-${String(usuario.id).padStart(3, '0')}`,

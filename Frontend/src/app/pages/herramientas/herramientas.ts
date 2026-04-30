@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
 import { ApiTool, ToolsService } from '../../services/tools.service';
+import { PrestamosService, Prestamo } from '../../services/prestamos.service';
 import { ToolUnit } from '../../models/tool.model';
 import { AddToolComponent } from '../../components/add-tool/add-tool.component';
 
@@ -14,6 +15,8 @@ import { AddToolComponent } from '../../components/add-tool/add-tool.component';
 })
 export class Herramientas implements OnInit {
   tools: ToolUnit[] = [];
+  // mapa toolId -> cantidad reservada actualmente (suma de prestamos activos)
+  reservedMap: Record<number, number> = {};
   totalCount: number = 0;
   availableCount: number = 0;
   lowStockCount: number = 0;
@@ -28,6 +31,7 @@ export class Herramientas implements OnInit {
 
   constructor(
     private readonly toolsService: ToolsService,
+    private readonly prestamosService: PrestamosService,
     private readonly cdr: ChangeDetectorRef
   ) {}
 
@@ -50,12 +54,45 @@ export class Herramientas implements OnInit {
       .subscribe({
         next: (units) => {
           this.tools = units;
-          this.updateStats();
+          // después de cargar herramientas, cargar prestamos para calcular reservados
+          this.prestamosService.getPrestamos().subscribe({
+            next: (prestamos) => {
+              this.computeReservedMap(prestamos);
+              this.updateStats();
+              this.cdr.detectChanges();
+            },
+            error: () => {
+              // si falla la carga de prestamos, igual actualizamos stats con datos disponibles
+              this.updateStats();
+              this.cdr.detectChanges();
+            },
+          });
         },
         error: () => {
           this.error = 'No se pudieron cargar las herramientas';
         },
       });
+  }
+
+  private computeReservedMap(prestamos: Prestamo[]) {
+    this.reservedMap = {};
+    for (const p of prestamos) {
+      // considerar préstamos activos o no devueltos como reservados
+      if (p.estado && p.estado.toLowerCase() === 'devuelto') continue;
+      const toolId = p.id_herramienta;
+      const qty = p.cantidad ?? 1;
+      this.reservedMap[toolId] = (this.reservedMap[toolId] || 0) + qty;
+    }
+  }
+
+  getReservedCount(toolId: number): number {
+    return this.reservedMap[toolId] || 0;
+  }
+
+  getAvailableForTool(tool: ToolUnit): number {
+    const total = tool.cantidad ?? 0;
+    const reserved = this.getReservedCount(tool.id);
+    return Math.max(total - reserved, 0);
   }
 
   updateStats() {

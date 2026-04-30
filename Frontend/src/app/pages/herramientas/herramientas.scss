@@ -223,6 +223,35 @@
             background: rgba($color-error, 0.1);
           }
         }
+
+        .stock-info {
+          margin-top: 8px;
+
+          .stock-numbers {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+
+            small {
+              font-size: 12px;
+              color: $color-text-secondary;
+              padding: 4px 6px;
+              border-radius: $radius-sm;
+            }
+
+            /* Reservados: naranja/medio */
+            small:first-child {
+              color: $color-action-secondary;
+              background: rgba($color-action-secondary, 0.08);
+            }
+
+            /* Disponibles: verde */
+            small:last-child {
+              color: $color-success;
+              background: rgba($color-success, 0.08);
+            }
+          }
+        }
       }
 
       .actions {

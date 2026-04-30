@@ -8,9 +8,13 @@
 
 .app-content {
   flex: 1;
-  margin-left: 280px;
+  margin-left: 0;
   overflow-y: auto;
   transition: margin-left $transition-fast;
+
+  &.sidebar-visible {
+    margin-left: 280px;
+  }
 
   &.sidebar-collapsed {
     margin-left: 80px;
@@ -19,7 +23,11 @@
 
 @media (max-width: 768px) {
   .app-content {
-    margin-left: 70px;
+    margin-left: 0;
+
+    &.sidebar-visible {
+      margin-left: 70px;
+    }
 
     &.sidebar-collapsed {
       margin-left: 70px;

@@ -83,9 +83,14 @@
             ID: {{ tool.unitId }}
           </div>
 
-          <div
-            [class]="'availability ' + getStatusClass(tool.status)">
-            {{ getStatusLabel(tool.status) }}
+          <div class="stock-info">
+            <div [class]="'availability ' + getStatusClass(tool.status)">
+              {{ getStatusLabel(tool.status) }}
+            </div>
+            <div class="stock-numbers">
+              <small>Reservados: {{ getReservedCount(tool.id) }}</small>
+              <small>Disponibles: {{ getAvailableForTool(tool) }}</small>
+            </div>
           </div>
         </div>
 

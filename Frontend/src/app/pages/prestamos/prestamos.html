@@ -1,0 +1,167 @@
+<div class="prestamos">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>Gestión de Préstamos</h1>
+    <p class="subtitle">Registra y controla los préstamos de herramientas</p>
+  </div>
+
+  <!-- Mensajes -->
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+    <button class="close-btn" (click)="clearMessages()">✕</button>
+  </div>
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+    <button class="close-btn" (click)="clearMessages()">✕</button>
+  </div>
+
+  <!-- Botón para mostrar/ocultar formulario -->
+  <div class="action-bar">
+    <button class="btn-primary" (click)="toggleForm()" [disabled]="loading">
+      {{ showForm ? '✕ Cancelar' : '➕ Nuevo Préstamo' }}
+    </button>
+  </div>
+
+  <!-- Formulario -->
+  <div class="form-container" *ngIf="showForm">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="prestamo-form">
+      <div class="form-group">
+        <label for="id_usuario">Usuario *</label>
+        <input
+          type="number"
+          id="id_usuario"
+          formControlName="id_usuario"
+          placeholder="ID del usuario"
+          class="form-input"
+        />
+        <small *ngIf="form.get('id_usuario')?.hasError('required')" class="error-text">
+          El usuario es requerido
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="id_herramienta">Herramienta Disponible *</label>
+        <select id="id_herramienta" formControlName="id_herramienta" class="form-input">
+          <option value="" disabled>-- Selecciona una herramienta --</option>
+          <option *ngFor="let tool of herramientasDisponibles" [value]="tool.id">
+            {{ tool.modelName }} ({{ tool.toolTypeName }}) - Stock: {{ tool.cantidad || 0 }}
+          </option>
+        </select>
+        <small *ngIf="form.get('id_herramienta')?.hasError('required')" class="error-text">
+          Debes seleccionar una herramienta
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="cantidad">Cantidad a llevar *</label>
+        <input
+          type="number"
+          id="cantidad"
+          formControlName="cantidad"
+          min="1"
+          [max]="getMaxCantidad()"
+          class="form-input"
+        />
+        <small *ngIf="form.get('cantidad')?.hasError('required')" class="error-text">
+          Debes indicar la cantidad a llevar
+        </small>
+        <small *ngIf="form.get('cantidad')?.hasError('min')" class="error-text">
+          La cantidad debe ser al menos 1
+        </small>
+        <small *ngIf="form.get('cantidad')?.hasError('max')" class="error-text">
+          La cantidad no puede exceder el stock disponible ({{ getMaxCantidad() }})
+        </small>
+        <small *ngIf="form.get('cantidad')?.valid && getMaxCantidad()" class="info-text">
+          Stock disponible: {{ getMaxCantidad() }}
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="fecha_devolucion_estimada">Fecha Estimada de Devolución *</label>
+        <input
+          type="datetime-local"
+          id="fecha_devolucion_estimada"
+          formControlName="fecha_devolucion_estimada"
+          class="form-input"
+        />
+        <small *ngIf="form.get('fecha_devolucion_estimada')?.hasError('required')" class="error-text">
+          La fecha de devolución es requerida
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="estado">Estado *</label>
+        <select id="estado" formControlName="estado" class="form-input">
+          <option value="activo">Activo</option>
+          <option value="vencido">Vencido</option>
+          <option value="devuelto">Devuelto</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="observaciones">Observaciones</label>
+        <textarea
+          id="observaciones"
+          formControlName="observaciones"
+          placeholder="Notas adicionales sobre el préstamo..."
+          class="form-input"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-submit" [disabled]="!form.valid || loading">
+          {{ loading ? '⏳ Guardando...' : '💾 Registrar Préstamo' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Lista de Préstamos -->
+  <div class="prestamos-list">
+    <h2>Préstamos Registrados</h2>
+
+    <div *ngIf="loadingInitial && prestamos.length === 0" class="loading-state">
+      <p>Cargando préstamos...</p>
+    </div>
+
+    <div *ngIf="prestamos.length === 0 && !loadingInitial" class="empty-state">
+      <p>No hay préstamos registrados aún</p>
+    </div>
+
+    <div class="prestamos-grid" *ngIf="prestamos.length > 0">
+      <div class="prestamo-card" *ngFor="let prestamo of prestamos">
+        <div class="card-header">
+          <h3>{{ prestamo.herramienta?.nombre || 'Herramienta desconocida' }}</h3>
+          <span class="estado-badge" [ngClass]="'estado-' + (prestamo.estado || 'desconocido')">
+            {{ prestamo.estado || 'Sin estado' }}
+          </span>
+        </div>
+        <div class="card-body">
+          <p><strong>Usuario:</strong> {{ prestamo.usuario?.nombre || 'Desconocido' }}</p>
+          <p><strong>Correo:</strong> {{ prestamo.usuario?.correo || 'N/A' }}</p>
+          <p><strong>Fecha Préstamo:</strong> {{ prestamo.fecha_prestamo | date: 'short' }}</p>
+          <p *ngIf="prestamo.fecha_devolucion_estimada">
+            <strong>Devolución Estimada:</strong> {{ prestamo.fecha_devolucion_estimada | date: 'short' }}
+          </p>
+          <p *ngIf="prestamo.observaciones">
+            <strong>Observaciones:</strong> {{ prestamo.observaciones }}
+          </p>
+          <p *ngIf="prestamo.cantidad">
+            <strong>Cantidad prestada:</strong> {{ prestamo.cantidad }}
+          </p>
+          <div class="card-actions">
+            <button class="btn btn-outline" (click)="startEdit(prestamo)">Editar</button>
+            <button
+              class="btn btn-primary"
+              (click)="finalizePrestamo(prestamo)"
+              *ngIf="prestamo.estado?.toLowerCase() !== 'devuelto'"
+            >
+              Finalizar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

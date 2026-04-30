@@ -9,4 +9,5 @@ export interface ToolUnit {
   location?: string;
   imageUrl?: string | null;
   description?: string | null;
+  cantidad?: number | null;
 }
