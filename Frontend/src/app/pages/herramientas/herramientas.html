@@ -60,15 +60,11 @@
       <article class="tool-card card" *ngFor="let tool of filteredTools()">
         
         <!-- 🔥 AQUÍ ESTÁ EL FIX -->
-        <div
-          class="thumb"
-          role="img"
-          [attr.aria-label]="'Imagen ' + tool.modelName">
-
+        <div class="thumb">
           <img
             *ngIf="tool.imageUrl"
             [src]="tool.imageUrl"
-            alt="herramienta"
+            [alt]="'Imagen de ' + tool.modelName"
           />
 
           <div *ngIf="!tool.imageUrl" class="placeholder">
@@ -94,7 +90,7 @@
         </div>
 
         <div class="actions">
-          <button class="btn btn-outline">
+          <button class="btn btn-outline" (click)="openEditToolModal(tool.id)">
             Editar
           </button>
 
@@ -121,7 +117,16 @@
 
 <!-- Modal para agregar herramienta -->
 <app-add-tool
-  [isOpen]="isAddToolModalOpen"
+  [isOpen]="isAddToolModalOpen || selectedToolLoading || !!selectedTool"
+  [mode]="selectedToolLoading ? 'edit' : selectedTool ? 'edit' : 'add'"
+  [tool]="selectedTool"
+  [loadingData]="selectedToolLoading"
   (closed)="closeAddToolModal()"
-  (created)="onToolCreated()">
+  (created)="onToolCreated()"
+  (saved)="onToolSaved()"
+  (deleted)="onToolDeleted()">
 </app-add-tool>
+
+<div *ngIf="selectedToolError" class="no-results">
+  <p>{{ selectedToolError }}</p>
+</div>

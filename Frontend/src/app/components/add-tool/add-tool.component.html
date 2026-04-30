@@ -1,14 +1,20 @@
 <div class="modal-overlay" *ngIf="isOpen" (click)="onCancel()">
   <div class="modal-container" (click)="$event.stopPropagation()">
     <header class="modal-header">
-      <h2 class="modal-title">Agregar Herramienta</h2>
+      <h2 class="modal-title">
+        {{ isHeaderEditMode ? 'Editar Herramienta' : 'Agregar Herramienta' }}
+      </h2>
       <button class="modal-close" (click)="onCancel()" aria-label="Cerrar modal">
         ✕
       </button>
     </header>
 
     <div class="modal-body">
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+      <div class="loading-message" *ngIf="loadingData && !tool">
+        Cargando herramienta...
+      </div>
+
+      <form *ngIf="!loadingData" [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
         <!-- Error message -->
         <div class="error-message" *ngIf="submitError">
           {{ submitError }}
@@ -175,12 +181,22 @@
       <button type="button" class="btn btn-outline" (click)="onCancel()">
         Cancelar
       </button>
+
+      <button
+        *ngIf="isEditMode"
+        type="button"
+        class="btn btn-outline btn-danger"
+        (click)="onDelete()"
+        [disabled]="loading">
+        Eliminar herramienta
+      </button>
+
       <button
         type="button"
         class="btn btn-primary"
         (click)="onSubmit()"
         [disabled]="loading || form.invalid">
-        {{ loading ? 'Creando...' : 'Crear' }}
+        {{ loading ? (isEditMode ? 'Guardando...' : 'Creando...') : (isEditMode ? 'Guardar cambios' : 'Crear') }}
       </button>
     </footer>
   </div>

@@ -340,6 +340,17 @@ select {
   }
 }
 
+.btn-danger {
+  background: transparent;
+  border: 1px solid $color-error;
+  color: $color-error;
+
+  &:not(:disabled):hover {
+    background: rgba($color-error, 0.1);
+    border-color: $color-error;
+  }
+}
+
 .btn-outline {
   background: transparent;
   border: 1px solid $color-bg-light;

@@ -4,7 +4,7 @@ import { Observable, map, timeout } from 'rxjs';
 import { ToolUnit } from '../models/tool.model';
 import { API_BASE_URL } from './api.config';
 
-interface ApiTool {
+export interface ApiTool {
   id: number;
   nombre: string;
   descripcion: string | null;
@@ -17,6 +17,7 @@ interface ApiTool {
   disponibilidad: boolean | null;
   id_almacen: number | null;
   foto_herramienta: string | null;
+  cantidad?: number | null;
 }
 
 export interface ToolType {
@@ -49,6 +50,8 @@ export interface CreateToolRequest {
   cantidad?: number | null;
 }
 
+export type UpdateToolRequest = CreateToolRequest;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -68,6 +71,18 @@ export class ToolsService {
     return this.http.post<ApiTool>(`${API_BASE_URL}/herramientas`, data).pipe(
       timeout(5000)
     );
+  }
+
+  getTool(id: number): Observable<ApiTool> {
+    return this.http.get<ApiTool>(`${API_BASE_URL}/herramientas/${id}`).pipe(timeout(5000));
+  }
+
+  updateTool(id: number, data: UpdateToolRequest): Observable<ApiTool> {
+    return this.http.put<ApiTool>(`${API_BASE_URL}/herramientas/${id}`, data).pipe(timeout(5000));
+  }
+
+  deleteTool(id: number): Observable<void> {
+    return this.http.delete<void>(`${API_BASE_URL}/herramientas/${id}`).pipe(timeout(5000));
   }
 
   // ─── Catálogos ────────────────────────────────────────────────────────────

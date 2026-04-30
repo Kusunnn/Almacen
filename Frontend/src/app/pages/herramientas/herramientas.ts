@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
-import { ToolsService } from '../../services/tools.service';
+import { ApiTool, ToolsService } from '../../services/tools.service';
 import { ToolUnit } from '../../models/tool.model';
 import { AddToolComponent } from '../../components/add-tool/add-tool.component';
 
@@ -22,6 +22,9 @@ export class Herramientas implements OnInit {
   error = '';
 
   isAddToolModalOpen = false;
+  selectedTool: ApiTool | null = null;
+  selectedToolError = '';
+  selectedToolLoading = false;
 
   constructor(
     private readonly toolsService: ToolsService,
@@ -106,14 +109,45 @@ export class Herramientas implements OnInit {
   }
 
   openAddToolModal() {
+    this.selectedTool = null;
     this.isAddToolModalOpen = true;
+  }
+
+  openEditToolModal(toolId: number) {
+    this.selectedToolLoading = true;
+    this.selectedToolError = '';
+
+    this.toolsService.getTool(toolId).pipe(
+      finalize(() => {
+        this.selectedToolLoading = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
+      next: (tool) => {
+        this.selectedTool = tool;
+      },
+      error: () => {
+        this.selectedToolError = 'No se pudo cargar la herramienta para editar';
+      },
+    });
   }
 
   closeAddToolModal() {
     this.isAddToolModalOpen = false;
+    this.selectedTool = null;
+    this.selectedToolLoading = false;
+    this.selectedToolError = '';
   }
 
   onToolCreated() {
+    this.loadTools();
+  }
+
+  onToolSaved() {
+    this.loadTools();
+  }
+
+  onToolDeleted() {
     this.loadTools();
   }
 }
