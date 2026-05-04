@@ -4,7 +4,9 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { PrestamosService, Prestamo, PrestamoCreacionDto } from '../../services/prestamos.service';
 import { HistorialService } from '../../services/historial.service';
 import { ToolsService } from '../../services/tools.service';
+import { UsersService } from '../../services/users.service';
 import { ToolUnit } from '../../models/tool.model';
+import { AuthUser } from '../../models/auth.model';
 
 @Component({
   selector: 'app-prestamos',
@@ -16,19 +18,28 @@ import { ToolUnit } from '../../models/tool.model';
 export class Prestamos implements OnInit {
   form!: FormGroup;
   prestamos: Prestamo[] = [];
+  usuarios: AuthUser[] = [];
+  todasHerramientas: ToolUnit[] = [];
   herramientasDisponibles: ToolUnit[] = [];
+  herramientasFormulario: ToolUnit[] = [];
+  usuariosFormulario: AuthUser[] = [];
+  usuariosFiltrados: AuthUser[] = [];
+  herramientasFiltradas: ToolUnit[] = [];
   editingPrestamoId: number | null = null;
+  editingPrestamo: Prestamo | null = null;
   loading = false;
   loadingInitial = true;
   error: string | null = null;
   successMessage: string | null = null;
-  showForm = false;
+  isModalOpen = false;
+  modalMode: 'add' | 'edit' = 'add';
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly prestamosService: PrestamosService,
     private readonly historialService: HistorialService,
     private readonly toolsService: ToolsService,
+    private readonly usersService: UsersService,
     private readonly cdr: ChangeDetectorRef
   ) {
     this.initializeForm();
@@ -37,24 +48,75 @@ export class Prestamos implements OnInit {
   ngOnInit(): void {
     this.loadPrestamos();
     this.loadHerramientas();
+    this.loadUsuarios();
     this.setupCantidadValidation();
+    this.setupBusquedaUsuarios();
+    this.setupBusquedaHerramientas();
   }
 
   private setupCantidadValidation(): void {
     this.form.get('id_herramienta')?.valueChanges.subscribe((toolId) => {
-      if (toolId) {
-        const selectedTool = this.herramientasDisponibles.find((t) => t.id === parseInt(toolId, 10));
-        const cantidadControl = this.form.get('cantidad');
-        if (cantidadControl && selectedTool && selectedTool.cantidad) {
-          cantidadControl.setValidators([
-            Validators.required,
-            Validators.min(1),
-            Validators.max(selectedTool.cantidad),
-          ]);
-          cantidadControl.updateValueAndValidity();
-        }
-      }
+      this.updateCantidadValidation(toolId);
     });
+  }
+
+  private setupBusquedaUsuarios(): void {
+    this.form.get('id_usuario')?.valueChanges.subscribe((searchTerm) => {
+      this.filtrarUsuarios(searchTerm);
+    });
+  }
+
+  private setupBusquedaHerramientas(): void {
+    this.form.get('id_herramienta')?.valueChanges.subscribe((searchTerm) => {
+      this.filtrarHerramientas(searchTerm);
+    });
+  }
+
+  private filtrarUsuarios(searchTerm: string | number): void {
+    if (typeof searchTerm === 'number') {
+      this.usuariosFiltrados = this.usuariosFormulario;
+      return;
+    }
+
+    const search = String(searchTerm).toLowerCase();
+    this.usuariosFiltrados = this.usuariosFormulario.filter(
+      (u) =>
+        u.nombre.toLowerCase().includes(search) ||
+        u.correo?.toLowerCase().includes(search) ||
+        u.id.toString().includes(search)
+    );
+  }
+
+  private filtrarHerramientas(searchTerm: string | number): void {
+    if (typeof searchTerm === 'number') {
+      this.herramientasFiltradas = this.herramientasFormulario;
+      return;
+    }
+
+    const search = String(searchTerm).toLowerCase();
+    this.herramientasFiltradas = this.herramientasFormulario.filter(
+      (h) =>
+        h.modelName.toLowerCase().includes(search) ||
+        h.toolTypeName.toLowerCase().includes(search) ||
+        h.brandName.toLowerCase().includes(search)
+    );
+  }
+
+  private updateCantidadValidation(toolId: string | number | null | undefined): void {
+    const cantidadControl = this.form.get('cantidad');
+    if (!cantidadControl) {
+      return;
+    }
+
+    const maxCantidad = this.getMaxCantidadForTool(toolId);
+    const validators = [Validators.required, Validators.min(1)];
+
+    if (maxCantidad > 0) {
+      validators.push(Validators.max(maxCantidad));
+    }
+
+    cantidadControl.setValidators(validators);
+    cantidadControl.updateValueAndValidity({ emitEvent: false });
   }
 
   private initializeForm(): void {
@@ -88,20 +150,44 @@ export class Prestamos implements OnInit {
   private loadHerramientas(): void {
     this.toolsService.getAllUnits().subscribe({
       next: (tools) => {
+        this.todasHerramientas = tools;
         this.herramientasDisponibles = tools.filter((t) => t.status === 'available');
+        this.refreshHerramientasFormulario();
+        this.herramientasFiltradas = this.herramientasFormulario;
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Error loading tools:', err),
     });
   }
 
-  toggleForm(): void {
-    this.showForm = !this.showForm;
+  private loadUsuarios(): void {
+    this.usersService.getAllUsers().subscribe({
+      next: (users) => {
+        this.usuarios = users;
+        this.usuariosFormulario = users;
+        this.usuariosFiltrados = users;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error loading users:', err),
+    });
+  }
+
+  openModal(mode: 'add' | 'edit' = 'add'): void {
+    this.modalMode = mode;
+    this.isModalOpen = true;
+  }
+
+  closeModal(): void {
+    this.isModalOpen = false;
+    this.clearEditState();
   }
 
   startEdit(prestamo: Prestamo): void {
     this.editingPrestamoId = prestamo.id;
-    this.showForm = true;
+    this.editingPrestamo = prestamo;
+    this.modalMode = 'edit';
+    this.isModalOpen = true;
+    this.refreshHerramientasFormulario();
     this.form.patchValue({
       id_usuario: prestamo.id_usuario,
       id_herramienta: prestamo.id_herramienta,
@@ -110,7 +196,63 @@ export class Prestamos implements OnInit {
       estado: prestamo.estado ?? 'activo',
       observaciones: prestamo.observaciones ?? '',
     });
+    this.filtrarUsuarios(prestamo.id_usuario);
+    this.filtrarHerramientas(prestamo.id_herramienta);
+    this.updateCantidadValidation(prestamo.id_herramienta);
     this.cdr.detectChanges();
+  }
+
+  private clearEditState(): void {
+    this.editingPrestamoId = null;
+    this.editingPrestamo = null;
+    this.form.reset({
+      cantidad: 1,
+      estado: 'activo',
+    });
+    this.refreshHerramientasFormulario();
+  }
+
+  private refreshHerramientasFormulario(): void {
+    const herramientas = [...this.herramientasDisponibles];
+
+    if (this.editingPrestamo?.herramienta) {
+      const currentToolId = this.editingPrestamo.herramienta.id;
+      const currentTool = this.todasHerramientas.find((tool) => tool.id === currentToolId);
+      const alreadyIncluded = herramientas.some((tool) => tool.id === currentToolId);
+
+      if (!alreadyIncluded && currentTool) {
+        herramientas.unshift(currentTool);
+      }
+    }
+
+    this.herramientasFormulario = herramientas;
+    this.herramientasFiltradas = herramientas;
+  }
+
+  getUsuarioDisplay(userId: number): string {
+    const usuario = this.usuariosFormulario.find((u) => u.id === userId);
+    return usuario ? `${usuario.nombre} (${usuario.correo || 'Sin email'})` : '';
+  }
+
+  getHerramientaDisplay(toolId: number): string {
+    const herramienta = this.herramientasFormulario.find((h) => h.id === toolId);
+    return herramienta ? `${herramienta.modelName} (${herramienta.toolTypeName})` : '';
+  }
+
+  private getMaxCantidadForTool(toolId: string | number | null | undefined): number {
+    if (!toolId) {
+      return 0;
+    }
+
+    const numericToolId = Number(toolId);
+    const selectedTool = this.todasHerramientas.find((tool) => tool.id === numericToolId);
+
+    if (!selectedTool) {
+      return 0;
+    }
+
+    const baseCantidad = selectedTool.cantidad ?? 0;
+    return baseCantidad;
   }
 
   private toIsoDateTime(value: string | null | undefined): string | null {
@@ -124,11 +266,7 @@ export class Prestamos implements OnInit {
 
   getMaxCantidad(): number {
     const toolId = this.form.get('id_herramienta')?.value;
-    if (!toolId) {
-      return 0;
-    }
-    const selectedTool = this.herramientasDisponibles.find((t) => t.id === parseInt(toolId, 10));
-    return selectedTool?.cantidad || 0;
+    return this.getMaxCantidadForTool(toolId);
   }
 
   onSubmit(): void {
@@ -163,10 +301,10 @@ export class Prestamos implements OnInit {
       // Update existing
       this.prestamosService.updatePrestamo(this.editingPrestamoId, payload).subscribe({
         next: () => {
-          this.successMessage = '✅ Préstamo actualizado.';
-          this.form.reset({ estado: 'activo' });
-          this.showForm = false;
-          this.editingPrestamoId = null;
+          this.successMessage = 'Préstamo actualizado.';
+          this.form.reset({ cantidad: 1, estado: 'activo' });
+          this.isModalOpen = false;
+          this.clearEditState();
           this.loadPrestamos();
           this.loadHerramientas();
           this.loading = false;
@@ -200,9 +338,10 @@ export class Prestamos implements OnInit {
           })
           .subscribe({
             next: () => {
-              this.successMessage = `✅ Préstamo registrado exitosamente. Historial actualizado.`;
-              this.form.reset({ estado: 'activo' });
-              this.showForm = false;
+              this.successMessage = `Préstamo registrado exitosamente. Historial actualizado.`;
+              this.form.reset({ cantidad: 1, estado: 'activo' });
+              this.isModalOpen = false;
+              this.clearEditState();
               this.loadPrestamos();
               this.loadHerramientas();
               this.loading = false;
@@ -210,7 +349,7 @@ export class Prestamos implements OnInit {
             },
             error: (err) => {
               console.error('Error creating historial:', err);
-              this.successMessage = `⚠️ Préstamo creado, pero hubo un error al registrar en historial.`;
+              this.successMessage = `Préstamo creado, pero hubo un error al registrar en historial.`;
               this.loading = false;
               this.cdr.detectChanges();
             },
@@ -236,7 +375,7 @@ export class Prestamos implements OnInit {
 
     this.prestamosService.updatePrestamo(prestamo.id, patch).subscribe({
       next: () => {
-        this.successMessage = '✅ Préstamo finalizado.';
+        this.successMessage = 'Préstamo finalizado.';
         this.loadPrestamos();
         this.loadHerramientas();
         this.loading = false;

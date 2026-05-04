@@ -1,46 +1,43 @@
-<aside [class.collapsed]="isCollapsed()" class="sidebar">
-  <!-- Header con botón toggle -->
+<aside [class.collapsed]="sidebarState.isCollapsed()" class="sidebar">
   <div class="sidebar-header">
     <h2 class="app-title">Almacén</h2>
-    <button class="toggle-btn" (click)="toggleSidebar()" [attr.aria-label]="isCollapsed() ? 'Expandir menú' : 'Contraer menú'">
-      {{ isCollapsed() ? '»' : '«' }}
+    <button class="toggle-btn" (click)="toggleSidebar()" [attr.aria-label]="sidebarState.isCollapsed() ? 'Expandir menú' : 'Contraer menú'">
+      {{ sidebarState.isCollapsed() ? '>' : '<' }}
     </button>
   </div>
 
-  <!-- Navegación -->
   <nav class="sidebar-nav">
     <ul class="nav-menu">
       <li class="nav-item">
         <button routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
-          <span class="icon">📊</span>
+          <span class="chip">DB</span>
           <span class="label">Dashboard</span>
         </button>
       </li>
       <li class="nav-item">
         <button routerLink="/herramientas" routerLinkActive="active" class="nav-link">
-          <span class="icon">🔧</span>
+          <span class="chip">HT</span>
           <span class="label">Herramientas</span>
         </button>
       </li>
       <li class="nav-item">
         <button routerLink="/prestamos" routerLinkActive="active" class="nav-link">
-          <span class="icon">📦</span>
+          <span class="chip">PR</span>
           <span class="label">Préstamos</span>
         </button>
       </li>
       <li class="nav-item">
         <button routerLink="/usuarios" routerLinkActive="active" class="nav-link">
-          <span class="icon">👥</span>
+          <span class="chip">US</span>
           <span class="label">Usuarios</span>
         </button>
       </li>
     </ul>
   </nav>
 
-  <!-- Footer con logout -->
   <div class="sidebar-footer">
     <button (click)="logout()" class="logout-btn">
-      <span class="icon">🚪</span>
+      <span class="chip">CS</span>
       <span class="label">Cerrar sesión</span>
     </button>
   </div>

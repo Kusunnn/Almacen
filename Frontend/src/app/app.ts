@@ -3,6 +3,7 @@ import { Component, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { SidebarStateService } from './services/sidebar-state.service';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +16,10 @@ export class App {
 
   protected readonly showSidebar = signal(true);
 
-  constructor(private readonly router: Router) {
+  constructor(
+    private readonly router: Router,
+    readonly sidebarState: SidebarStateService
+  ) {
     this.updateSidebarVisibility(this.router.url);
 
     this.router.events
@@ -28,6 +32,11 @@ export class App {
   private updateSidebarVisibility(url: string): void {
     const hiddenRoutes = ['/login', '/register'];
     const normalizedUrl = url.split('?')[0].split('#')[0];
-    this.showSidebar.set(!hiddenRoutes.includes(normalizedUrl));
+    const visible = !hiddenRoutes.includes(normalizedUrl);
+    this.showSidebar.set(visible);
+
+    if (!visible) {
+      this.sidebarState.setCollapsed(false);
+    }
   }
 }

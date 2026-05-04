@@ -1,7 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { SidebarStateService } from '../../services/sidebar-state.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -11,12 +12,13 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent {
-  isCollapsed = signal(false);
-
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    readonly sidebarState: SidebarStateService
+  ) {}
 
   toggleSidebar(): void {
-    this.isCollapsed.update((value) => !value);
+    this.sidebarState.toggle();
   }
 
   logout(): void {

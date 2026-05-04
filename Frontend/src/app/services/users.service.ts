@@ -32,6 +32,15 @@ interface RoleOption {
 export class UsersService {
   private readonly http = inject(HttpClient);
 
+  getAllUsers(): Observable<AuthUser[]> {
+    return this.http
+      .get<AuthUser[] | ApiListResponse<AuthUser[]>>(`${API_BASE_URL}/usuarios`)
+      .pipe(
+        timeout(5000),
+        map((response) => (Array.isArray(response) ? response : response.value ?? []))
+      );
+  }
+
   getRoles(): Observable<RoleOption[]> {
     return this.http
       .get<RoleOption[]>(`${API_BASE_URL}/usuarios/roles`)
