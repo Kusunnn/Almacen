@@ -1,0 +1,492 @@
+@use '../../../styles/variables' as *;
+
+.marcas {
+  padding: $padding-lg;
+  min-height: 100vh;
+  background: $color-bg-dark;
+  color: $color-text;
+}
+
+.page-header {
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  .subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: $color-text-secondary;
+  }
+}
+
+.action-bar {
+  margin-bottom: 24px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-primary {
+  background: $color-action-primary;
+  color: $color-bg-dark;
+  border: none;
+  padding: $padding-md $padding-lg;
+  border-radius: $radius-md;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all $transition-fast;
+
+  &:hover:not(:disabled) {
+    background: lighten($color-action-primary, 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(241, 196, 15, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.search-container {
+  flex: 1;
+  max-width: 320px;
+
+  input {
+    width: 100%;
+    padding: $padding-md $padding-md;
+    border-radius: $radius-md;
+    border: 1px solid $color-bg-light;
+    background: rgba(255, 255, 255, 0.02);
+    color: $color-text;
+    outline: none;
+    font-size: 14px;
+
+    &:focus {
+      border-color: $color-action-primary;
+      box-shadow: 0 0 0 2px rgba(241, 196, 15, 0.1);
+    }
+
+    &::placeholder {
+      color: $color-text-secondary;
+    }
+  }
+}
+
+.marcas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  h2 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: $color-text;
+  }
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.marca-card {
+  background: $color-primary;
+  border: 1px solid $color-bg-light;
+  border-radius: $radius-md;
+  overflow: hidden;
+  transition: all $transition-fast;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &:hover {
+    border-color: $color-action-primary;
+    box-shadow: 0 4px 16px rgba(241, 196, 15, 0.1);
+  }
+
+  .marca-card__content {
+    padding: $padding-md $padding-lg;
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      font-weight: 600;
+      color: $color-text;
+      word-break: break-word;
+    }
+
+    .marca-id {
+      margin: 0;
+      color: $color-text-secondary;
+      font-size: 13px;
+    }
+  }
+
+  .marca-card__actions {
+    display: flex;
+    gap: 8px;
+    padding: 0 $padding-lg $padding-lg;
+
+    .btn {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: $radius-md;
+      border: none;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all $transition-fast;
+
+      &.btn-outline {
+        background: transparent;
+        color: $color-action-primary;
+        border: 1px solid $color-action-primary;
+
+        &:hover:not(:disabled) {
+          background: rgba(241, 196, 15, 0.1);
+        }
+      }
+
+      &.btn-danger {
+        background: rgba(231, 76, 60, 0.2);
+        color: $color-error;
+        border: 1px solid $color-error;
+
+        &:hover:not(:disabled) {
+          background: rgba(231, 76, 60, 0.3);
+        }
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: $padding-lg;
+  color: $color-text-secondary;
+  background: $color-primary;
+  border: 1px solid $color-bg-light;
+  border-radius: $radius-md;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.alert {
+  padding: $padding-md;
+  border-radius: $radius-md;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+
+  &.alert-error {
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    color: $color-error;
+  }
+
+  &.alert-success {
+    background: rgba(46, 204, 113, 0.1);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+    color: $color-success;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-container {
+  background: $color-primary;
+  border: 1px solid $color-bg-light;
+  border-radius: $radius-lg;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $padding-lg;
+  border-bottom: 1px solid $color-bg-light;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: $color-text;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: $color-text-secondary;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: $color-text;
+  }
+}
+
+.modal-body {
+  padding: $padding-lg;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: $color-text;
+  letter-spacing: 0.5px;
+}
+
+.label .required {
+  color: $color-error;
+  margin-left: 2px;
+}
+
+.input-base {
+  padding: $padding-md;
+  border-radius: $radius-md;
+  border: 1px solid $color-bg-light;
+  background: rgba(255, 255, 255, 0.02);
+  color: $color-text;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all $transition-fast;
+
+  &:focus {
+    outline: none;
+    border-color: $color-action-primary;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 0 0 2px rgba(241, 196, 15, 0.1);
+  }
+
+  &::placeholder {
+    color: $color-text-secondary;
+  }
+
+  &[aria-invalid='true'] {
+    border-color: $color-error;
+    background: rgba(231, 76, 60, 0.05);
+  }
+}
+
+textarea {
+  resize: vertical;
+  font-family: inherit;
+  min-height: 100px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: $padding-md;
+  padding-top: $padding-md;
+  border-top: 1px solid $color-bg-light;
+}
+
+.btn-cancel {
+  background: transparent;
+  color: $color-text-secondary;
+  border: 1px solid $color-bg-light;
+  padding: $padding-md $padding-lg;
+  border-radius: $radius-md;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all $transition-fast;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.05);
+    color: $color-text;
+    border-color: $color-text;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-submit {
+  background: $color-success;
+  color: white;
+  border: none;
+  padding: $padding-md $padding-lg;
+  border-radius: $radius-md;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all $transition-fast;
+
+  &:hover:not(:disabled) {
+    background: lighten($color-success, 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: $padding-lg;
+  border-top: 1px solid $color-bg-light;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.btn-danger-confirm {
+  background: $color-error;
+  color: white;
+  border: none;
+  padding: $padding-md $padding-lg;
+  border-radius: $radius-md;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all $transition-fast;
+  flex: 1;
+
+  &:hover:not(:disabled) {
+    background: lighten($color-error, 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.form-error {
+  padding: $padding-md;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid $color-error;
+  border-radius: $radius-md;
+  color: $color-error;
+  font-size: 13px;
+}
+
+.confirm-warning {
+  margin: 0;
+  font-size: 13px;
+  color: $color-text-secondary;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .marcas {
+    padding: $padding-md;
+  }
+
+  .action-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions,
+  .modal-footer {
+    flex-direction: column;
+  }
+}
