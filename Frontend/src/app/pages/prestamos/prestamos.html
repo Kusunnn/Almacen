@@ -59,8 +59,9 @@
             <button class="btn btn-outline" (click)="startEdit(prestamo)">Editar</button>
             <button
               class="btn btn-primary"
-              (click)="finalizePrestamo(prestamo)"
+              (click)="openFinalizarConfirmModal(prestamo)"
               *ngIf="prestamo.estado?.toLowerCase() !== 'devuelto'"
+              [disabled]="loading"
             >
               Finalizar
             </button>
@@ -231,6 +232,38 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación de finalización -->
+  <div class="modal-overlay" *ngIf="showFinalizarConfirmModal" (click)="cancelFinalize()">
+    <div class="modal-container modal-confirm" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2 class="modal-title">Confirmar finalización</h2>
+        <button class="modal-close" (click)="cancelFinalize()" aria-label="Cerrar modal">
+          ✕
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <p class="confirm-message" *ngIf="prestamoToFinalize">
+          ¿Estás seguro de que deseas finalizar el préstamo de
+          <strong>{{ prestamoToFinalize.herramienta?.nombre || 'herramienta desconocida' }}</strong>?
+        </p>
+        <p class="confirm-info" *ngIf="prestamoToFinalize">
+          <strong>Usuario:</strong> {{ prestamoToFinalize.usuario?.nombre || 'Desconocido' }}
+        </p>
+        <p class="confirm-warning">El estado cambiará a "Devuelto" y se registrará la fecha actual.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cancelFinalize()" [disabled]="loading">
+          Cancelar
+        </button>
+        <button class="btn-success-confirm" (click)="confirmFinalize()" [disabled]="loading">
+          {{ loading ? 'Finalizando...' : 'Finalizar' }}
+        </button>
       </div>
     </div>
   </div>

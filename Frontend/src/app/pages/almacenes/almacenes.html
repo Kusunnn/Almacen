@@ -1,0 +1,190 @@
+<div class="almacenes">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>Gestión de Almacenes</h1>
+    <p class="subtitle">Administra los almacenes disponibles</p>
+  </div>
+
+  <!-- Mensajes -->
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+    <button class="close-btn" (click)="error = null">✕</button>
+  </div>
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+    <button class="close-btn" (click)="successMessage = null">✕</button>
+  </div>
+
+  <!-- Botón para abrir modal -->
+  <div class="action-bar">
+    <button class="btn-primary" (click)="openModal('add')" [disabled]="loading">
+      + Nuevo Almacén
+    </button>
+  </div>
+
+  <!-- Lista de Almacenes -->
+  <div class="almacenes-list">
+    <h2>Almacenes Registrados</h2>
+
+    <div *ngIf="loadingInitial && almacenes.length === 0" class="loading-state">
+      <p>Cargando almacenes...</p>
+    </div>
+
+    <div *ngIf="almacenes.length === 0 && !loadingInitial" class="empty-state">
+      <p>No hay almacenes registrados aún</p>
+    </div>
+
+    <div class="almacenes-grid" *ngIf="almacenes.length > 0">
+      <div class="almacen-card" *ngFor="let almacen of almacenes">
+        <div class="card-header">
+          <h3>{{ almacen.nombre }}</h3>
+        </div>
+        <div class="card-body">
+          <p *ngIf="almacen.telefono">
+            <strong>Teléfono:</strong> {{ almacen.telefono }}
+          </p>
+          <p *ngIf="almacen.direccion">
+            <strong>Dirección:</strong> {{ almacen.direccion }}
+          </p>
+          <p *ngIf="!almacen.telefono && !almacen.direccion" class="no-info">
+            Sin información adicional
+          </p>
+          <div class="card-actions">
+            <button class="btn btn-outline" (click)="startEdit(almacen)">Editar</button>
+            <button class="btn btn-danger" (click)="openDeleteConfirmModal(almacen)" [disabled]="loading">
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para crear/editar almacén -->
+  <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2 class="modal-title">
+          {{ modalMode === 'edit' ? 'Editar Almacén' : 'Nuevo Almacén' }}
+        </h2>
+        <button class="modal-close" (click)="closeModal()" aria-label="Cerrar modal">
+          ✕
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+          <!-- Error message -->
+          <div class="error-message" *ngIf="error">
+            {{ error }}
+          </div>
+
+          <!-- Nombre -->
+          <div class="form-group full-width">
+            <label for="nombre" class="label">
+              Nombre <span class="required">*</span>
+            </label>
+            <input
+              id="nombre"
+              type="text"
+              class="input-base"
+              formControlName="nombre"
+              placeholder="Ej: Almacén Principal"
+              [attr.aria-invalid]="
+                form.get('nombre')?.invalid && form.get('nombre')?.touched
+              "
+            />
+            <div class="error" *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+              <span *ngIf="form.get('nombre')?.errors?.['required']">El nombre es requerido</span>
+              <span *ngIf="form.get('nombre')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+              <span *ngIf="form.get('nombre')?.errors?.['maxlength']">Máximo 100 caracteres</span>
+            </div>
+          </div>
+
+          <!-- Teléfono -->
+          <div class="form-group full-width">
+            <label for="telefono" class="label">Teléfono</label>
+            <input
+              id="telefono"
+              type="tel"
+              class="input-base"
+              formControlName="telefono"
+              placeholder="Ej: +34912345678"
+              [attr.aria-invalid]="
+                form.get('telefono')?.invalid && form.get('telefono')?.touched
+              "
+            />
+            <div class="error" *ngIf="form.get('telefono')?.invalid && form.get('telefono')?.touched">
+              <span *ngIf="form.get('telefono')?.errors?.['minlength']">Mínimo 7 caracteres</span>
+              <span *ngIf="form.get('telefono')?.errors?.['maxlength']">Máximo 20 caracteres</span>
+            </div>
+          </div>
+
+          <!-- Dirección -->
+          <div class="form-group full-width">
+            <label for="direccion" class="label">Dirección</label>
+            <textarea
+              id="direccion"
+              class="input-base"
+              formControlName="direccion"
+              placeholder="Ej: Calle Principal, 123, Ciudad"
+              [attr.aria-invalid]="
+                form.get('direccion')?.invalid && form.get('direccion')?.touched
+              "
+            ></textarea>
+            <div class="error" *ngIf="form.get('direccion')?.invalid && form.get('direccion')?.touched">
+              <span *ngIf="form.get('direccion')?.errors?.['maxlength']">Máximo 500 caracteres</span>
+            </div>
+          </div>
+
+          <!-- Form actions -->
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn-cancel"
+              (click)="closeModal()"
+              [disabled]="loading"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn-submit"
+              [disabled]="loading || form.invalid"
+            >
+              {{ loading ? 'Guardando...' : 'Guardar' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación de eliminación -->
+  <div class="modal-overlay" *ngIf="showDeleteConfirmModal" (click)="cancelDelete()">
+    <div class="modal-container modal-confirm" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2 class="modal-title">Confirmar eliminación</h2>
+        <button class="modal-close" (click)="cancelDelete()" aria-label="Cerrar modal">
+          ✕
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <p class="confirm-message" *ngIf="almacenToDelete">
+          ¿Estás seguro de que deseas eliminar el almacén <strong>"{{ almacenToDelete.nombre }}"</strong>?
+        </p>
+        <p class="confirm-warning">Esta acción no se puede deshacer.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cancelDelete()" [disabled]="loading">
+          Cancelar
+        </button>
+        <button class="btn-danger-confirm" (click)="confirmDelete()" [disabled]="loading">
+          {{ loading ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

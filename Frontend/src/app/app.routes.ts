@@ -4,6 +4,7 @@ import { Dashboard } from './pages/dashboard/dashboard';
 import { Herramientas } from './pages/herramientas/herramientas';
 import { Usuarios } from './pages/usuarios/usuarios';
 import { Prestamos } from './pages/prestamos/prestamos';
+import { Almacenes } from './pages/almacenes/almacenes';
 import { Register } from './pages/register/register';
 import { authGuard, loginRedirectGuard } from './guards/auth.guard';
 
@@ -15,5 +16,6 @@ export const routes: Routes = [
   { path: 'herramientas', component: Herramientas, canActivate: [authGuard] },
   { path: 'usuarios', component: Usuarios, canActivate: [authGuard] },
   { path: 'prestamos', component: Prestamos, canActivate: [authGuard] },
+  { path: 'almacenes', component: Almacenes, canActivate: [authGuard] },
   { path: '**', redirectTo: 'login' },
 ];

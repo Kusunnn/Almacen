@@ -33,6 +33,8 @@ export class Prestamos implements OnInit {
   successMessage: string | null = null;
   isModalOpen = false;
   modalMode: 'add' | 'edit' = 'add';
+  showFinalizarConfirmModal = false;
+  prestamoToFinalize: Prestamo | null = null;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -364,8 +366,21 @@ export class Prestamos implements OnInit {
     });
   }
 
-  finalizePrestamo(prestamo: Prestamo): void {
-    if (!confirm('Confirmar finalización del préstamo?')) return;
+  openFinalizarConfirmModal(prestamo: Prestamo): void {
+    this.prestamoToFinalize = prestamo;
+    this.showFinalizarConfirmModal = true;
+    this.cdr.detectChanges();
+  }
+
+  cancelFinalize(): void {
+    this.showFinalizarConfirmModal = false;
+    this.prestamoToFinalize = null;
+    this.cdr.detectChanges();
+  }
+
+  confirmFinalize(): void {
+    if (!this.prestamoToFinalize) return;
+
     this.loading = true;
     const now = new Date().toISOString();
     const patch: Partial<Prestamo> = {
@@ -373,18 +388,22 @@ export class Prestamos implements OnInit {
       estado: 'devuelto',
     };
 
-    this.prestamosService.updatePrestamo(prestamo.id, patch).subscribe({
+    this.prestamosService.updatePrestamo(this.prestamoToFinalize.id, patch).subscribe({
       next: () => {
-        this.successMessage = 'Préstamo finalizado.';
+        this.successMessage = 'Préstamo finalizado correctamente.';
+        this.loading = false;
+        this.showFinalizarConfirmModal = false;
+        this.prestamoToFinalize = null;
         this.loadPrestamos();
         this.loadHerramientas();
-        this.loading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error finalizing prestamo:', err);
         this.error = 'Error al finalizar el préstamo.';
         this.loading = false;
+        this.showFinalizarConfirmModal = false;
+        this.prestamoToFinalize = null;
         this.cdr.detectChanges();
       },
     });
