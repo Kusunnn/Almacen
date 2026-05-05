@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import {
   BehaviorSubject,
   Observable,
@@ -17,6 +18,7 @@ import { API_BASE_URL } from './api.config';
 })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
   private readonly storageKey = 'almacen.currentUser';
   private readonly currentUserSubject = new BehaviorSubject<AuthUser | null>(
     this.readStoredUser()
@@ -43,6 +45,7 @@ export class AuthService {
 
   logout(): void {
     this.clearSession();
+    this.router.navigate(['/login']);
   }
 
   isAuthenticated(): boolean {

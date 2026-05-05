@@ -18,6 +18,7 @@ import { AuthUser } from '../../models/auth.model';
 export class Prestamos implements OnInit {
   form!: FormGroup;
   prestamos: Prestamo[] = [];
+  searchText: string = '';
   usuarios: AuthUser[] = [];
   todasHerramientas: ToolUnit[] = [];
   herramientasDisponibles: ToolUnit[] = [];
@@ -412,5 +413,23 @@ export class Prestamos implements OnInit {
   clearMessages(): void {
     this.error = null;
     this.successMessage = null;
+  }
+
+  filteredPrestamos(): Prestamo[] {
+    if (!this.searchText.trim()) {
+      return this.prestamos;
+    }
+    const search = this.searchText.toLowerCase();
+    return this.prestamos.filter(
+      (prestamo) =>
+        (prestamo.herramienta?.nombre && prestamo.herramienta.nombre.toLowerCase().includes(search)) ||
+        (prestamo.usuario?.nombre && prestamo.usuario.nombre.toLowerCase().includes(search)) ||
+        (prestamo.usuario?.correo && prestamo.usuario.correo.toLowerCase().includes(search)) ||
+        (prestamo.estado && prestamo.estado.toLowerCase().includes(search))
+    );
+  }
+
+  onSearch(event: any): void {
+    this.searchText = event.target.value;
   }
 }

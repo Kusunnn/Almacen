@@ -68,6 +68,7 @@
   margin-bottom: 24px;
   display: flex;
   gap: 12px;
+  align-items: center;
 
   .btn-primary {
     background: $color-action-primary;
@@ -87,6 +88,31 @@
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+    }
+  }
+
+  .search-container {
+    flex: 1;
+    max-width: 300px;
+
+    input {
+      width: 100%;
+      padding: $padding-md $padding-md;
+      border-radius: $radius-md;
+      border: 1px solid $color-bg-light;
+      background: rgba(255, 255, 255, 0.02);
+      color: $color-text;
+      outline: none;
+      font-size: 14px;
+
+      &:focus {
+        border-color: $color-action-primary;
+        box-shadow: 0 0 0 2px rgba(241, 196, 15, 0.1);
+      }
+
+      &::placeholder {
+        color: $color-text-secondary;
+      }
     }
   }
 }

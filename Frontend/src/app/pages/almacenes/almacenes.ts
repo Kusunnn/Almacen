@@ -13,6 +13,7 @@ import { AlmacenesService, Almacen, AlmacenCreacionDto } from '../../services/al
 export class Almacenes implements OnInit {
   form!: FormGroup;
   almacenes: Almacen[] = [];
+  searchText: string = '';
   editingAlmacenId: number | null = null;
   editingAlmacen: Almacen | null = null;
   loading = false;
@@ -190,5 +191,22 @@ export class Almacenes implements OnInit {
       this.error = null;
       this.cdr.detectChanges();
     }, 3000);
+  }
+
+  filteredAlmacenes(): Almacen[] {
+    if (!this.searchText.trim()) {
+      return this.almacenes;
+    }
+    const search = this.searchText.toLowerCase();
+    return this.almacenes.filter(
+      (almacen) =>
+        almacen.nombre.toLowerCase().includes(search) ||
+        (almacen.telefono && almacen.telefono.toLowerCase().includes(search)) ||
+        (almacen.direccion && almacen.direccion.toLowerCase().includes(search))
+    );
+  }
+
+  onSearch(event: any): void {
+    this.searchText = event.target.value;
   }
 }

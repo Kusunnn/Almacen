@@ -20,6 +20,14 @@
     <button class="btn-primary" (click)="openModal('add')" [disabled]="loading">
       + Nuevo Préstamo
     </button>
+    <div class="search-container">
+      <input
+        class="input-base"
+        type="search"
+        placeholder="Buscar préstamos..."
+        aria-label="Buscar préstamos"
+        (input)="onSearch($event)">
+    </div>
   </div>
 
   <!-- Lista de Préstamos -->
@@ -35,7 +43,7 @@
     </div>
 
     <div class="prestamos-grid" *ngIf="prestamos.length > 0">
-      <div class="prestamo-card" *ngFor="let prestamo of prestamos">
+      <div class="prestamo-card" *ngFor="let prestamo of filteredPrestamos()">
         <div class="card-header">
           <h3>{{ prestamo.herramienta?.nombre || 'Herramienta desconocida' }}</h3>
           <span class="estado-badge" [ngClass]="'estado-' + (prestamo.estado || 'desconocido')">

@@ -20,6 +20,14 @@
     <button class="btn-primary" (click)="openModal('add')" [disabled]="loading">
       + Nuevo Almacén
     </button>
+    <div class="search-container">
+      <input
+        class="input-base"
+        type="search"
+        placeholder="Buscar almacenes..."
+        aria-label="Buscar almacenes"
+        (input)="onSearch($event)">
+    </div>
   </div>
 
   <!-- Lista de Almacenes -->
@@ -35,7 +43,7 @@
     </div>
 
     <div class="almacenes-grid" *ngIf="almacenes.length > 0">
-      <div class="almacen-card" *ngFor="let almacen of almacenes">
+      <div class="almacen-card" *ngFor="let almacen of filteredAlmacenes()">
         <div class="card-header">
           <h3>{{ almacen.nombre }}</h3>
         </div>
