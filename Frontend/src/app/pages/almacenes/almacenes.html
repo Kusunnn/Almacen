@@ -59,6 +59,9 @@
           </p>
           <div class="card-actions">
             <button class="btn btn-outline" (click)="startEdit(almacen)">Editar</button>
+            <button class="btn btn-primary" (click)="openToolsModal(almacen)">
+              Ver Herramientas
+            </button>
             <button class="btn btn-danger" (click)="openDeleteConfirmModal(almacen)" [disabled]="loading">
               Eliminar
             </button>
@@ -191,6 +194,65 @@
         </button>
         <button class="btn-danger-confirm" (click)="confirmDelete()" [disabled]="loading">
           {{ loading ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de herramientas del almacén -->
+  <div class="modal-overlay" *ngIf="isToolsModalOpen" (click)="closeToolsModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2 class="modal-title">
+          Herramientas - {{ selectedAlmacen?.nombre || 'Almacén' }}
+        </h2>
+        <button class="modal-close" (click)="closeToolsModal()" aria-label="Cerrar modal">
+          ✕
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <div *ngIf="loadingTools" class="loading-state">
+          <p>Cargando herramientas...</p>
+        </div>
+
+        <div *ngIf="!loadingTools && toolsForAlmacen.length === 0" class="empty-state">
+          <p>No hay herramientas asociadas a este almacén</p>
+        </div>
+
+        <div *ngIf="!loadingTools && toolsForAlmacen.length > 0" class="tools-list-modal">
+          <table class="tools-table">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Modelo</th>
+                <th>Tipo</th>
+                <th>Marca</th>
+                <th>Cantidad</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let tool of toolsForAlmacen">
+                <td>{{ tool.unitId }}</td>
+                <td>{{ tool.modelName }}</td>
+                <td>{{ tool.toolTypeName }}</td>
+                <td>{{ tool.brandName }}</td>
+                <td>{{ tool.cantidad || 0 }}</td>
+                <td>
+                  <span class="estado-badge" [ngClass]="'estado-' + tool.status">
+                    {{ tool.status === 'available' ? 'Disponible' : tool.status === 'reserved' ? 'Reservada' : 'Mantenimiento' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-danger-outline" (click)="closeToolsModal()">
+          Cerrar
         </button>
       </div>
     </div>

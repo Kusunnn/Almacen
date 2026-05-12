@@ -2,6 +2,8 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlmacenesService, Almacen, AlmacenCreacionDto } from '../../services/almacenes.service';
+import { ToolsService } from '../../services/tools.service';
+import { ToolUnit } from '../../models/tool.model';
 
 @Component({
   selector: 'app-almacenes',
@@ -24,10 +26,18 @@ export class Almacenes implements OnInit {
   modalMode: 'add' | 'edit' = 'add';
   showDeleteConfirmModal = false;
   almacenToDelete: Almacen | null = null;
+  
+  // Modal de herramientas
+  isToolsModalOpen = false;
+  selectedAlmacen: Almacen | null = null;
+  toolsForAlmacen: ToolUnit[] = [];
+  loadingTools = false;
+  allTools: ToolUnit[] = [];
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly almacenesService: AlmacenesService,
+    private readonly toolsService: ToolsService,
     private readonly cdr: ChangeDetectorRef
   ) {
     this.initializeForm();
@@ -35,6 +45,7 @@ export class Almacenes implements OnInit {
 
   ngOnInit(): void {
     this.loadAlmacenes();
+    this.loadTools();
   }
 
   private initializeForm(): void {
@@ -58,6 +69,18 @@ export class Almacenes implements OnInit {
         this.error = 'Error al cargar los almacenes';
         this.loadingInitial = false;
         this.cdr.detectChanges();
+      },
+    });
+  }
+
+  private loadTools(): void {
+    this.toolsService.getAllUnits().subscribe({
+      next: (tools) => {
+        this.allTools = tools;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading tools:', err);
       },
     });
   }
@@ -204,6 +227,24 @@ export class Almacenes implements OnInit {
         (almacen.telefono && almacen.telefono.toLowerCase().includes(search)) ||
         (almacen.direccion && almacen.direccion.toLowerCase().includes(search))
     );
+  }
+
+  openToolsModal(almacen: Almacen): void {
+    this.selectedAlmacen = almacen;
+    this.loadingTools = true;
+    this.toolsForAlmacen = this.allTools.filter(
+      (tool) => tool.almacenId === almacen.id
+    );
+    this.loadingTools = false;
+    this.isToolsModalOpen = true;
+    this.cdr.detectChanges();
+  }
+
+  closeToolsModal(): void {
+    this.isToolsModalOpen = false;
+    this.selectedAlmacen = null;
+    this.toolsForAlmacen = [];
+    this.cdr.detectChanges();
   }
 
   onSearch(event: any): void {

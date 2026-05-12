@@ -131,6 +131,7 @@ export class ToolsService {
       modelCode: `HM-${String(tool.id).padStart(4, '0')}`,
       status: this.mapStatus(tool),
       location: tool.id_almacen ? `Almacén ${tool.id_almacen}` : 'Sin almacén',
+      almacenId: tool.id_almacen ?? null,
       imageUrl: tool.foto_herramienta,
       description: tool.descripcion,
       cantidad: tool.cantidad,

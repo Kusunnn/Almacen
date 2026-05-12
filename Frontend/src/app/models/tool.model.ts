@@ -7,6 +7,7 @@ export interface ToolUnit {
   modelCode: string;
   status: 'available' | 'reserved' | 'maintenance';
   location?: string;
+  almacenId?: number | null;
   imageUrl?: string | null;
   description?: string | null;
   cantidad?: number | null;

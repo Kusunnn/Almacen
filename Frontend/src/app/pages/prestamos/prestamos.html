@@ -46,8 +46,8 @@
       <div class="prestamo-card" *ngFor="let prestamo of filteredPrestamos()">
         <div class="card-header">
           <h3>{{ prestamo.herramienta?.nombre || 'Herramienta desconocida' }}</h3>
-          <span class="estado-badge" [ngClass]="'estado-' + (prestamo.estado || 'desconocido')">
-            {{ prestamo.estado || 'Sin estado' }}
+          <span class="estado-badge" [ngClass]="'estado-' + getEstadoDisplay(prestamo)">
+            {{ getEstadoText(prestamo) }}
           </span>
         </div>
         <div class="card-body">

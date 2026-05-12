@@ -53,56 +53,12 @@ export class Prestamos implements OnInit {
     this.loadHerramientas();
     this.loadUsuarios();
     this.setupCantidadValidation();
-    this.setupBusquedaUsuarios();
-    this.setupBusquedaHerramientas();
   }
 
   private setupCantidadValidation(): void {
     this.form.get('id_herramienta')?.valueChanges.subscribe((toolId) => {
       this.updateCantidadValidation(toolId);
     });
-  }
-
-  private setupBusquedaUsuarios(): void {
-    this.form.get('id_usuario')?.valueChanges.subscribe((searchTerm) => {
-      this.filtrarUsuarios(searchTerm);
-    });
-  }
-
-  private setupBusquedaHerramientas(): void {
-    this.form.get('id_herramienta')?.valueChanges.subscribe((searchTerm) => {
-      this.filtrarHerramientas(searchTerm);
-    });
-  }
-
-  private filtrarUsuarios(searchTerm: string | number): void {
-    if (typeof searchTerm === 'number') {
-      this.usuariosFiltrados = this.usuariosFormulario;
-      return;
-    }
-
-    const search = String(searchTerm).toLowerCase();
-    this.usuariosFiltrados = this.usuariosFormulario.filter(
-      (u) =>
-        u.nombre.toLowerCase().includes(search) ||
-        u.correo?.toLowerCase().includes(search) ||
-        u.id.toString().includes(search)
-    );
-  }
-
-  private filtrarHerramientas(searchTerm: string | number): void {
-    if (typeof searchTerm === 'number') {
-      this.herramientasFiltradas = this.herramientasFormulario;
-      return;
-    }
-
-    const search = String(searchTerm).toLowerCase();
-    this.herramientasFiltradas = this.herramientasFormulario.filter(
-      (h) =>
-        h.modelName.toLowerCase().includes(search) ||
-        h.toolTypeName.toLowerCase().includes(search) ||
-        h.brandName.toLowerCase().includes(search)
-    );
   }
 
   private updateCantidadValidation(toolId: string | number | null | undefined): void {
@@ -199,8 +155,6 @@ export class Prestamos implements OnInit {
       estado: prestamo.estado ?? 'activo',
       observaciones: prestamo.observaciones ?? '',
     });
-    this.filtrarUsuarios(prestamo.id_usuario);
-    this.filtrarHerramientas(prestamo.id_herramienta);
     this.updateCantidadValidation(prestamo.id_herramienta);
     this.cdr.detectChanges();
   }
@@ -415,18 +369,59 @@ export class Prestamos implements OnInit {
     this.successMessage = null;
   }
 
-  filteredPrestamos(): Prestamo[] {
-    if (!this.searchText.trim()) {
-      return this.prestamos;
+  private isVencido(prestamo: Prestamo): boolean {
+    if (!prestamo.fecha_devolucion_estimada || prestamo.estado?.toLowerCase() === 'devuelto') {
+      return false;
     }
-    const search = this.searchText.toLowerCase();
-    return this.prestamos.filter(
-      (prestamo) =>
-        (prestamo.herramienta?.nombre && prestamo.herramienta.nombre.toLowerCase().includes(search)) ||
-        (prestamo.usuario?.nombre && prestamo.usuario.nombre.toLowerCase().includes(search)) ||
-        (prestamo.usuario?.correo && prestamo.usuario.correo.toLowerCase().includes(search)) ||
-        (prestamo.estado && prestamo.estado.toLowerCase().includes(search))
-    );
+    const now = new Date();
+    const estimatedDate = new Date(prestamo.fecha_devolucion_estimada);
+    return estimatedDate < now;
+  }
+
+  private getSortOrder(prestamo: Prestamo): number {
+    if (this.isVencido(prestamo)) return 0; // vencidos primero
+    if (prestamo.estado?.toLowerCase() === 'activo') return 1; // activos después
+    return 2; // devueltos al final
+  }
+
+  getEstadoDisplay(prestamo: Prestamo): string {
+    if (this.isVencido(prestamo)) {
+      return 'vencido';
+    }
+    return prestamo.estado?.toLowerCase() || 'desconocido';
+  }
+
+  getEstadoText(prestamo: Prestamo): string {
+    if (this.isVencido(prestamo)) {
+      return 'Vencido';
+    }
+    const estado = prestamo.estado?.toLowerCase();
+    switch (estado) {
+      case 'activo':
+        return 'Activo';
+      case 'devuelto':
+        return 'Devuelto';
+      default:
+        return prestamo.estado || 'Sin estado';
+    }
+  }
+
+  filteredPrestamos(): Prestamo[] {
+    let result = this.prestamos;
+
+    if (this.searchText.trim()) {
+      const search = this.searchText.toLowerCase();
+      result = result.filter(
+        (prestamo) =>
+          (prestamo.herramienta?.nombre && prestamo.herramienta.nombre.toLowerCase().includes(search)) ||
+          (prestamo.usuario?.nombre && prestamo.usuario.nombre.toLowerCase().includes(search)) ||
+          (prestamo.usuario?.correo && prestamo.usuario.correo.toLowerCase().includes(search)) ||
+          (prestamo.estado && prestamo.estado.toLowerCase().includes(search)) ||
+          (this.isVencido(prestamo) && 'vencido'.includes(search))
+      );
+    }
+
+    return result.sort((a, b) => this.getSortOrder(a) - this.getSortOrder(b));
   }
 
   onSearch(event: any): void {
