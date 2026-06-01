@@ -1,6 +1,6 @@
 @use '../../../styles/variables' as *;
 
-.prestamos {
+.almacenes {
   padding: $padding-lg;
   min-height: 100vh;
   background: $color-bg-dark;
@@ -81,8 +81,9 @@
     transition: all $transition-fast;
 
     &:hover:not(:disabled) {
+      background: lighten($color-action-primary, 10%);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(241, 196, 15, 0.3);
+      box-shadow: 0 4px 12px rgba(241, 196, 15, 0.2);
     }
 
     &:disabled {
@@ -149,7 +150,7 @@
   border: 1px solid $color-bg-light;
   border-radius: $radius-lg;
   width: 90%;
-  max-width: 600px;
+  max-width: 900px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
@@ -228,6 +229,23 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.confirm-message {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  color: $color-text;
+
+  strong {
+    color: $color-action-primary;
+  }
+}
+
+.confirm-warning {
+  margin: 0;
+  font-size: 13px;
+  color: $color-text-secondary;
+  font-style: italic;
 }
 
 /* ========================= */
@@ -318,6 +336,7 @@
 textarea {
   resize: vertical;
   font-family: inherit;
+  min-height: 100px;
 }
 
 select {
@@ -375,10 +394,15 @@ select {
     font-weight: 600;
     transition: all $transition-fast;
 
-    &:hover {
-      background: rgba(255, 255, 255, 0.04);
-      border-color: $color-text-secondary;
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.05);
       color: $color-text;
+      border-color: $color-text;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
   }
 
@@ -393,8 +417,9 @@ select {
     transition: all $transition-fast;
 
     &:hover:not(:disabled) {
+      background: lighten($color-success, 10%);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
     }
 
     &:disabled {
@@ -404,143 +429,9 @@ select {
   }
 }
 
-
 /* ========================= */
-/* Prestamos List */
+/* Modal Footer */
 /* ========================= */
-.prestamos-list {
-  h2 {
-    margin: 0 0 16px 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: $color-text;
-  }
-}
-
-.loading-state,
-.empty-state {
-  text-align: center;
-  padding: $padding-lg;
-  color: $color-text-secondary;
-  background: $color-primary;
-  border: 1px solid $color-bg-light;
-  border-radius: $radius-md;
-
-  p {
-    margin: 0;
-    font-size: 14px;
-  }
-}
-
-.prestamos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-}
-
-.prestamo-card {
-  background: $color-primary;
-  border: 1px solid $color-bg-light;
-  border-radius: $radius-md;
-  overflow: hidden;
-  transition: all $transition-fast;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  }
-
-  .card-header {
-    padding: $padding-md;
-    background: $color-bg-light;
-    border-bottom: 1px solid $color-bg-light;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-
-    h3 {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 600;
-      color: $color-text;
-      flex: 1;
-    }
-
-    .estado-badge {
-      padding: 4px 12px;
-      border-radius: $radius-md;
-      font-size: 11px;
-      font-weight: 700;
-      white-space: nowrap;
-      margin-left: $padding-md;
-
-      &.estado-activo {
-        background: rgba(46, 204, 113, 0.2);
-        color: $color-success;
-      }
-
-      &.estado-vencido {
-        background: rgba(231, 76, 60, 0.2);
-        color: $color-error;
-      }
-
-      &.estado-devuelto {
-        background: rgba(241, 196, 15, 0.2);
-        color: $color-action-primary;
-      }
-    }
-  }
-
-  .card-body {
-    padding: $padding-md;
-
-    p {
-      margin: 0 0 8px 0;
-      font-size: 13px;
-      color: $color-text-secondary;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-
-      strong {
-        color: $color-text;
-        font-weight: 600;
-      }
-    }
-  }
-}
-
-/* ========================= */
-/* Modal Footer & Confirmation */
-/* ========================= */
-
-.confirm-message {
-  margin: 0 0 12px 0;
-  font-size: 15px;
-  color: $color-text;
-
-  strong {
-    color: $color-action-primary;
-  }
-}
-
-.confirm-info {
-  margin: 0 0 12px 0;
-  font-size: 14px;
-  color: $color-text-secondary;
-
-  strong {
-    color: $color-text;
-  }
-}
-
-.confirm-warning {
-  margin: 0;
-  font-size: 13px;
-  color: $color-text-secondary;
-  font-style: italic;
-}
 
 .modal-footer {
   display: flex;
@@ -573,8 +464,8 @@ select {
     }
   }
 
-  .btn-success-confirm {
-    background: $color-success;
+  .btn-danger-confirm {
+    background: $color-error;
     color: white;
     border: none;
     padding: $padding-md $padding-lg;
@@ -585,9 +476,32 @@ select {
     flex: 1;
 
     &:hover:not(:disabled) {
-      background: lighten($color-success, 10%);
+      background: lighten($color-error, 10%);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-danger-outline {
+    background: transparent;
+    color: $color-error;
+    border: 2px solid $color-error;
+    padding: $padding-md $padding-lg;
+    border-radius: $radius-md;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all $transition-fast;
+    flex: 1;
+
+    &:hover:not(:disabled) {
+      background: rgba(231, 76, 60, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
     }
 
     &:disabled {
@@ -598,22 +512,232 @@ select {
 }
 
 /* ========================= */
+/* Almacenes List */
+/* ========================= */
+.almacenes-list {
+  h2 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: $color-text;
+  }
+}
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: $padding-lg;
+  color: $color-text-secondary;
+  background: $color-primary;
+  border: 1px solid $color-bg-light;
+  border-radius: $radius-md;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+/* ========================= */
+/* Tools Modal Table */
+/* ========================= */
+
+.tools-list-modal {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tools-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  thead {
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid $color-bg-light;
+  }
+
+  th {
+    padding: $padding-md $padding-lg;
+    text-align: left;
+    font-weight: 600;
+    color: $color-text-secondary;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: $padding-lg $padding-lg;
+    border-bottom: 1px solid $color-bg-light;
+    color: $color-text;
+
+    &:first-child {
+      font-weight: 600;
+      color: $color-action-primary;
+    }
+  }
+
+  tbody tr {
+    transition: background $transition-fast;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+  }
+}
+
+.estado-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: $radius-sm;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  &.estado-available {
+    background: rgba(46, 204, 113, 0.15);
+    color: $color-success;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+  }
+
+  &.estado-reserved {
+    background: rgba(241, 196, 15, 0.15);
+    color: $color-action-secondary;
+    border: 1px solid rgba(241, 196, 15, 0.3);
+  }
+
+  &.estado-maintenance {
+    background: rgba(231, 76, 60, 0.15);
+    color: $color-error;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+  }
+}
+
+/* ========================= */
+/* Almacenes Grid */
+/* ========================= */
+
+.almacenes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.almacen-card {
+  background: $color-primary;
+  border: 1px solid $color-bg-light;
+  border-radius: $radius-md;
+  overflow: hidden;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: $color-action-primary;
+    box-shadow: 0 4px 16px rgba(241, 196, 15, 0.1);
+  }
+
+  .card-header {
+    padding: $padding-md $padding-lg;
+    border-bottom: 1px solid $color-bg-light;
+    background: rgba(241, 196, 15, 0.05);
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: $color-text;
+      word-break: break-word;
+    }
+  }
+
+  .card-body {
+    padding: $padding-md $padding-lg;
+
+    p {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      color: $color-text-secondary;
+
+      strong {
+        color: $color-text;
+      }
+
+      &:last-of-type {
+        margin-bottom: 12px;
+      }
+
+      &.no-info {
+        color: $color-text-secondary;
+        font-style: italic;
+      }
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+
+      .btn {
+        flex: 1;
+        padding: 8px 12px;
+        border-radius: $radius-md;
+        border: none;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        &.btn-outline {
+          background: transparent;
+          color: $color-action-primary;
+          border: 1px solid $color-action-primary;
+
+          &:hover:not(:disabled) {
+            background: rgba(241, 196, 15, 0.1);
+          }
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+        }
+
+        &.btn-danger {
+          background: rgba(231, 76, 60, 0.2);
+          color: $color-error;
+          border: 1px solid $color-error;
+
+          &:hover:not(:disabled) {
+            background: rgba(231, 76, 60, 0.3);
+          }
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* ========================= */
 /* Responsive */
 /* ========================= */
 @media (max-width: 768px) {
-  .prestamos {
+  .almacenes {
     padding: $padding-md;
   }
 
-  .prestamo-form {
-    grid-template-columns: 1fr;
+  .almacen-form {
+    padding: $padding-md;
   }
 
   .form-actions {
-    justify-content: center;
+    flex-direction: column;
   }
 
-  .prestamos-grid {
+  .almacenes-grid {
     grid-template-columns: 1fr;
   }
 }

@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from "@angular/router";
 import { CommonModule } from '@angular/common';
 import { ToolsService } from '../../services/tools.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { API_BASE_URL } from '../../services/api.config';
 
 interface ToolStats {
@@ -26,7 +26,7 @@ interface HistorialStats {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, HttpClientModule],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss'],
 })
@@ -43,7 +43,8 @@ export class Dashboard implements OnInit {
 
   constructor(
     private readonly toolsService: ToolsService,
-    private readonly http: HttpClient
+    private readonly http: HttpClient,
+    private readonly cdr: ChangeDetectorRef
   ) {
     this.userName = localStorage.getItem('userName') || 'Usuario';
   }
@@ -60,6 +61,7 @@ export class Dashboard implements OnInit {
         this.toolStats.available = tools.filter((t) => t.status === 'available').length;
         this.toolStats.unavailable = tools.filter((t) => t.status === 'maintenance').length;
         this.toolStats.borrowed = tools.filter((t) => t.status === 'reserved').length;
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Error loading tools:', err),
     });
@@ -67,17 +69,18 @@ export class Dashboard implements OnInit {
 
   private loadHistorial(): void {
     this.http.get<any[]>(`${API_BASE_URL}/historial`).subscribe({
-      next: (data) => {
-        this.recentHistory = data.slice(0, 5).map((item) => ({
-          id: item.id,
-          tipo: item.tipo_accion || 'Acción',
-          fecha: item.fecha || new Date().toISOString(),
-          descripcion: item.descripcion,
-        }));
-        this.historialStats.total = data.length;
-      },
-      error: (err) => console.error('Error loading history:', err),
-    });
+    next: (data) => {
+      this.recentHistory = data.slice(0, 5).map((item) => ({
+        id: item.id,
+        tipo: item.herramienta?.nombre || 'Acción',
+        fecha: item.fecha_movimiento || new Date().toISOString(),
+        descripcion: `${item.usuario?.nombre || 'Sistema'} - ${item.herramienta?.nombre || ''}`,
+      }));
+      this.historialStats.total = data.length;
+      this.cdr.detectChanges();
+    },
+    error: (err) => console.error('Error loading history:', err),
+  });
   }
 
   getHistoryIcon(tipo: string): string {

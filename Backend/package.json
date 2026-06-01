@@ -7,8 +7,7 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "node --watch src/server.js",
-    "start": "node src/server.js",
-    "postinstall": "prisma generate",
+    "start": "npx prisma generate && node src/server.js",
     "test:db": "node src/db/test-prisma.js",
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate",
