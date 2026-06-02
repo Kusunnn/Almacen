@@ -77,3 +77,7 @@ export const usuarioFiltroDto = z.object({
 export const usuarioEliminarDto = z.object({
   id: z.coerce.number().int().positive(),
 });
+
+export const googleLoginDto = z.object({
+  idToken: z.string().min(1, "El idToken de Google es requerido"),
+});

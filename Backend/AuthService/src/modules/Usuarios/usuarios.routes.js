@@ -6,6 +6,7 @@ const router = Router();
 
 router.get("/roles", usuariosController.listarRoles);
 router.post("/login", usuariosController.login);
+router.post("/google", usuariosController.loginConGoogle);
 router.post("/register", usuariosController.crear);
 router.get("/me", authenticate, usuariosController.me);
 

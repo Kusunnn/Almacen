@@ -21,9 +21,10 @@ model usuarios {
   telefono       String?    @db.VarChar(20)
   direccion      String?
   correo         String     @unique @db.VarChar(100)
-  contrasena     String
+  contrasena     String?
   id_rol         Int?
   fecha_registro DateTime?  @default(now()) @db.Timestamp(6)
   foto_perfil    String?
+  google_id      String?    @unique @db.VarChar(255)
   roles          roles?     @relation(fields: [id_rol], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

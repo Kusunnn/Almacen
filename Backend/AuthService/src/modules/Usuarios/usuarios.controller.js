@@ -6,6 +6,7 @@ import {
   usuarioFiltroDto,
   usuarioIdParamDto,
   usuarioLoginDto,
+  googleLoginDto,
 } from "./usuarios.dto.js";
 import {
   toUsuarioCreateData,
@@ -60,6 +61,22 @@ export const usuariosController = {
 
       return res.json({
         mensaje: "Login exitoso",
+        token,
+        usuario: toUsuarioDto(usuario),
+      });
+    } catch (error) {
+      return handleControllerError(error, res, next);
+    }
+  },
+
+  async loginConGoogle(req, res, next) {
+    try {
+      const { idToken } = googleLoginDto.parse(req.body);
+      const usuario = await usuariosService.autenticarConGoogle(idToken);
+      const token = signAuthToken(usuario);
+
+      return res.json({
+        mensaje: "Login con Google exitoso",
         token,
         usuario: toUsuarioDto(usuario),
       });

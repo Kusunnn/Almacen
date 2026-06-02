@@ -52,7 +52,21 @@ export const usuariosRepository = {
     });
   },
 
+  findByGoogleId(googleId) {
+    return usuariosModel.findUnique({
+      where: { google_id: googleId },
+      include: includeRelations,
+    });
+  },
+
   create(data) {
+    return usuariosModel.create({
+      data,
+      include: includeRelations,
+    });
+  },
+
+  createFromGoogle(data) {
     return usuariosModel.create({
       data,
       include: includeRelations,

@@ -1,7 +1,10 @@
 import bcrypt from "bcryptjs";
 import { usuariosRepository } from "./usuarios.repository.js";
+import { verifyGoogleToken } from "../../auth/google.js";
 
 const SALT_ROUNDS = 10;
+// Rol por defecto para usuarios que se registran con Google
+const ROL_DEFAULT_GOOGLE = 15; // Técnico
 
 function buildError(message, status = 500) {
   const error = new Error(message);
@@ -18,8 +21,44 @@ export const usuariosService = {
     const usuario = await usuariosRepository.findByCorreo(correo);
     if (!usuario) throw buildError("Credenciales inválidas", 401);
 
+    // Usuarios registrados con Google no tienen contraseña local
+    if (!usuario.contrasena) {
+      throw buildError("Esta cuenta fue creada con Google. Inicia sesión con Google.", 401);
+    }
+
     const contrasenaValida = await bcrypt.compare(contrasena, usuario.contrasena);
     if (!contrasenaValida) throw buildError("Credenciales inválidas", 401);
+
+    return usuario;
+  },
+
+  async autenticarConGoogle(idToken) {
+    const googlePayload = await verifyGoogleToken(idToken);
+
+    // 1. Buscar por google_id primero (usuario ya vinculado)
+    let usuario = await usuariosRepository.findByGoogleId(googlePayload.sub);
+
+    if (!usuario) {
+      // 2. Buscar por correo (puede que ya existiera con email/contraseña)
+      const existentePorCorreo = await usuariosRepository.findByCorreo(googlePayload.email);
+
+      if (existentePorCorreo) {
+        // Vincular la cuenta existente con Google
+        usuario = await usuariosRepository.update(existentePorCorreo.id, {
+          google_id: googlePayload.sub,
+          foto_perfil: existentePorCorreo.foto_perfil ?? googlePayload.picture,
+        });
+      } else {
+        // 3. Crear nuevo usuario con datos de Google
+        usuario = await usuariosRepository.createFromGoogle({
+          nombre: googlePayload.name,
+          correo: googlePayload.email,
+          google_id: googlePayload.sub,
+          foto_perfil: googlePayload.picture ?? null,
+          roles: { connect: { id: ROL_DEFAULT_GOOGLE } },
+        });
+      }
+    }
 
     return usuario;
   },

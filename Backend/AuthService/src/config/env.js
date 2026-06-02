@@ -11,4 +11,6 @@ export const env = {
   directUrl: process.env.DIRECT_URL,
   jwtSecret: process.env.JWT_SECRET ?? "almacen-auth-dev-secret",
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "8h",
+  googleClientId: process.env.GOOGLE_CLIENT_ID ?? "",
 };
+
