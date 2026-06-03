@@ -11,7 +11,7 @@ import {
   timeout,
 } from 'rxjs';
 import { AuthUser, LoginResponse } from '../models/auth.model';
-import { API_BASE_URL } from './api.config';
+import { AUTH_API_URL } from './api.config';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +28,7 @@ export class AuthService {
 
   login(correo: string, contrasena: string): Observable<boolean> {
     return this.http
-      .post<LoginResponse>(`${API_BASE_URL}/usuarios/login`, {
+      .post<LoginResponse>(`${AUTH_API_URL}/login`, {
         correo,
         contrasena,
       })

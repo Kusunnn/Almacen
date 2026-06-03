@@ -84,8 +84,8 @@
           </div>
 
           <div class="stock-info">
-            <div [class]="'availability ' + getStatusClass(tool.status)">
-              {{ getStatusLabel(tool.status) }}
+            <div [class]="'availability ' + getToolStatusClass(tool)">
+              {{ getToolStatusLabel(tool) }}
             </div>
             <div class="stock-numbers">
               <small>Reservados: {{ getReservedCount(tool.id) }}</small>
@@ -101,11 +101,10 @@
 
           <button
             class="btn btn-primary"
-            [disabled]="tool.status !== 'available'">
+            [disabled]="!canReserveTool(tool)"
+            (click)="canReserveTool(tool) && goToPrestamos()">
 
-            {{ tool.status === 'available'
-              ? 'Reservar'
-              : 'No disponible' }}
+            {{ canReserveTool(tool) ? 'Reservar' : 'No disponible' }}
 
           </button>
         </div>

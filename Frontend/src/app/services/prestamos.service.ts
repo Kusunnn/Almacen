@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map, timeout } from 'rxjs';
-import { API_BASE_URL } from './api.config';
+import { BACKEND_API_URL } from './api.config';
 
 interface ApiListResponse<T> {
   value: T;
@@ -54,25 +54,25 @@ export class PrestamosService {
     if (filtros?.id_herramienta) params = params.set('id_herramienta', filtros.id_herramienta);
     if (filtros?.estado) params = params.set('estado', filtros.estado);
 
-    return this.http.get<Prestamo[] | ApiListResponse<Prestamo[]>>(`${API_BASE_URL}/prestamos`, { params }).pipe(
+    return this.http.get<Prestamo[] | ApiListResponse<Prestamo[]>>(`${BACKEND_API_URL}/prestamos`, { params }).pipe(
       timeout(5000),
       map((response) => (Array.isArray(response) ? response : response.value ?? []))
     );
   }
 
   getPrestamoById(id: number): Observable<Prestamo> {
-    return this.http.get<Prestamo>(`${API_BASE_URL}/prestamos/${id}`).pipe(timeout(5000));
+    return this.http.get<Prestamo>(`${BACKEND_API_URL}/prestamos/${id}`).pipe(timeout(5000));
   }
 
   createPrestamo(dto: PrestamoCreacionDto): Observable<Prestamo> {
-    return this.http.post<Prestamo>(`${API_BASE_URL}/prestamos`, dto).pipe(timeout(5000));
+    return this.http.post<Prestamo>(`${BACKEND_API_URL}/prestamos`, dto).pipe(timeout(5000));
   }
 
   updatePrestamo(id: number, dto: Partial<PrestamoCreacionDto>): Observable<Prestamo> {
-    return this.http.put<Prestamo>(`${API_BASE_URL}/prestamos/${id}`, dto).pipe(timeout(5000));
+    return this.http.put<Prestamo>(`${BACKEND_API_URL}/prestamos/${id}`, dto).pipe(timeout(5000));
   }
 
   deletePrestamo(id: number): Observable<{ mensaje: string }> {
-    return this.http.delete<{ mensaje: string }>(`${API_BASE_URL}/prestamos/${id}`).pipe(timeout(5000));
+    return this.http.delete<{ mensaje: string }>(`${BACKEND_API_URL}/prestamos/${id}`).pipe(timeout(5000));
   }
 }

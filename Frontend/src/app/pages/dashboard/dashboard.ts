@@ -3,7 +3,7 @@ import { RouterLink } from "@angular/router";
 import { CommonModule } from '@angular/common';
 import { ToolsService } from '../../services/tools.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { API_BASE_URL } from '../../services/api.config';
+import { BACKEND_API_URL } from '../../services/api.config';
 
 interface ToolStats {
   total: number;
@@ -68,7 +68,7 @@ export class Dashboard implements OnInit {
   }
 
   private loadHistorial(): void {
-    this.http.get<any[]>(`${API_BASE_URL}/historial`).subscribe({
+    this.http.get<any[]>(`${BACKEND_API_URL}/historial`).subscribe({
     next: (data) => {
       this.recentHistory = data.slice(0, 5).map((item) => ({
         id: item.id,

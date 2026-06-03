@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, timeout } from 'rxjs';
 import { ToolUnit } from '../models/tool.model';
-import { API_BASE_URL } from './api.config';
+import { BACKEND_API_URL } from './api.config';
 
 export interface ApiTool {
   id: number;
@@ -58,49 +58,53 @@ export type UpdateToolRequest = CreateToolRequest;
 export class ToolsService {
   private readonly http = inject(HttpClient);
 
+  private isBorrowableTool(tool: ToolUnit): boolean {
+    return tool.status !== 'maintenance' && (tool.cantidad ?? 0) > 0;
+  }
+
   // ─── Herramientas ─────────────────────────────────────────────────────────
 
   getAllUnits(): Observable<ToolUnit[]> {
-    return this.http.get<ApiTool[]>(`${API_BASE_URL}/herramientas`).pipe(
+    return this.http.get<ApiTool[]>(`${BACKEND_API_URL}/herramientas`).pipe(
       timeout(5000),
       map((tools) => tools.map((tool) => this.mapTool(tool)))
     );
   }
 
   createTool(data: CreateToolRequest): Observable<ApiTool> {
-    return this.http.post<ApiTool>(`${API_BASE_URL}/herramientas`, data).pipe(
+    return this.http.post<ApiTool>(`${BACKEND_API_URL}/herramientas`, data).pipe(
       timeout(5000)
     );
   }
 
   getTool(id: number): Observable<ApiTool> {
-    return this.http.get<ApiTool>(`${API_BASE_URL}/herramientas/${id}`).pipe(timeout(5000));
+    return this.http.get<ApiTool>(`${BACKEND_API_URL}/herramientas/${id}`).pipe(timeout(5000));
   }
 
   updateTool(id: number, data: UpdateToolRequest): Observable<ApiTool> {
-    return this.http.put<ApiTool>(`${API_BASE_URL}/herramientas/${id}`, data).pipe(timeout(5000));
+    return this.http.put<ApiTool>(`${BACKEND_API_URL}/herramientas/${id}`, data).pipe(timeout(5000));
   }
 
   deleteTool(id: number): Observable<void> {
-    return this.http.delete<void>(`${API_BASE_URL}/herramientas/${id}`).pipe(timeout(5000));
+    return this.http.delete<void>(`${BACKEND_API_URL}/herramientas/${id}`).pipe(timeout(5000));
   }
 
   // ─── Catálogos ────────────────────────────────────────────────────────────
 
   getToolTypes(): Observable<ToolType[]> {
-    return this.http.get<ToolType[]>(`${API_BASE_URL}/tipos-herramienta`).pipe(
+    return this.http.get<ToolType[]>(`${BACKEND_API_URL}/tipos-herramienta`).pipe(
       timeout(5000)
     );
   }
 
   getBrands(): Observable<Brand[]> {
-    return this.http.get<Brand[]>(`${API_BASE_URL}/marcas`).pipe(
+    return this.http.get<Brand[]>(`${BACKEND_API_URL}/marcas`).pipe(
       timeout(5000)
     );
   }
 
   getWarehouses(): Observable<Warehouse[]> {
-    return this.http.get<Warehouse[]>(`${API_BASE_URL}/almacenes`).pipe(
+    return this.http.get<Warehouse[]>(`${BACKEND_API_URL}/almacenes`).pipe(
       timeout(5000)
     );
   }
@@ -112,11 +116,11 @@ export class ToolsService {
   }
 
   getAvailableCount(tools: ToolUnit[]): number {
-    return tools.filter((tool) => tool.status === 'available').length;
+    return tools.filter((tool) => this.isBorrowableTool(tool)).length;
   }
 
   getLowStockCount(tools: ToolUnit[]): number {
-    return tools.filter((tool) => tool.status !== 'available').length;
+    return tools.filter((tool) => tool.status !== 'maintenance' && (tool.cantidad ?? 0) <= 0).length;
   }
 
   // ─── Mapeos internos ──────────────────────────────────────────────────────

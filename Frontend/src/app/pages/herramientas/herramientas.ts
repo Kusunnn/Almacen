@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { ApiTool, ToolsService } from '../../services/tools.service';
 import { PrestamosService, Prestamo } from '../../services/prestamos.service';
@@ -32,8 +33,17 @@ export class Herramientas implements OnInit {
   constructor(
     private readonly toolsService: ToolsService,
     private readonly prestamosService: PrestamosService,
+    private readonly router: Router,
     private readonly cdr: ChangeDetectorRef
   ) {}
+
+  private isToolAvailable(tool: ToolUnit): boolean {
+    return tool.status !== 'maintenance' && this.getAvailableForTool(tool) > 0;
+  }
+
+  private getReservedForTool(toolId: number): number {
+    return this.getReservedCount(toolId);
+  }
 
   ngOnInit() {
     this.loadTools();
@@ -90,15 +100,21 @@ export class Herramientas implements OnInit {
   }
 
   getAvailableForTool(tool: ToolUnit): number {
+    if (tool.status === 'maintenance') {
+      return 0;
+    }
+
     const total = tool.cantidad ?? 0;
-    const reserved = this.getReservedCount(tool.id);
+    const reserved = this.getReservedForTool(tool.id);
     return Math.max(total - reserved, 0);
   }
 
   updateStats() {
     this.totalCount = this.toolsService.getTotalCount(this.tools);
-    this.availableCount = this.toolsService.getAvailableCount(this.tools);
-    this.lowStockCount = this.toolsService.getLowStockCount(this.tools);
+    this.availableCount = this.tools.filter((tool) => this.isToolAvailable(tool)).length;
+    this.lowStockCount = this.tools.filter(
+      (tool) => tool.status !== 'maintenance' && this.getAvailableForTool(tool) <= 0
+    ).length;
   }
 
   getStatusLabel(status: string): string {
@@ -112,6 +128,30 @@ export class Herramientas implements OnInit {
       default:
         return status;
     }
+  }
+
+  getToolStatusLabel(tool: ToolUnit): string {
+    if (tool.status === 'maintenance') {
+      return 'Mantenimiento';
+    }
+
+    return this.isToolAvailable(tool) ? 'Disponible' : 'Reservada';
+  }
+
+  getToolStatusClass(tool: ToolUnit): string {
+    if (tool.status === 'maintenance') {
+      return 'availability--low';
+    }
+
+    return this.isToolAvailable(tool) ? 'availability--high' : 'availability--medium';
+  }
+
+  canReserveTool(tool: ToolUnit): boolean {
+    return this.getAvailableForTool(tool) > 0;
+  }
+
+  goToPrestamos(): void {
+    this.router.navigate(['/prestamos']);
   }
 
   getStatusClass(status: string): string {

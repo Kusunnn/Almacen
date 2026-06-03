@@ -55,6 +55,10 @@ export class Prestamos implements OnInit {
     this.setupCantidadValidation();
   }
 
+  private canBeLoaned(tool: ToolUnit): boolean {
+    return tool.status !== 'maintenance' && (tool.cantidad ?? 0) > 0;
+  }
+
   private setupCantidadValidation(): void {
     this.form.get('id_herramienta')?.valueChanges.subscribe((toolId) => {
       this.updateCantidadValidation(toolId);
@@ -110,7 +114,7 @@ export class Prestamos implements OnInit {
     this.toolsService.getAllUnits().subscribe({
       next: (tools) => {
         this.todasHerramientas = tools;
-        this.herramientasDisponibles = tools.filter((t) => t.status === 'available');
+        this.herramientasDisponibles = tools.filter((t) => this.canBeLoaned(t));
         this.refreshHerramientasFormulario();
         this.herramientasFiltradas = this.herramientasFormulario;
         this.cdr.detectChanges();

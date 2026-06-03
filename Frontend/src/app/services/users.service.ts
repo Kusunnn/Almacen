@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, forkJoin, map, timeout } from 'rxjs';
 import { AuthUser } from '../models/auth.model';
 import { PrestamoUsuario, UserProfileView, UserTool } from '../models/user.model';
-import { API_BASE_URL } from './api.config';
+import { BACKEND_API_URL } from './api.config';
 
 interface ApiListResponse<T> {
   value: T;
@@ -34,7 +34,7 @@ export class UsersService {
 
   getAllUsers(): Observable<AuthUser[]> {
     return this.http
-      .get<AuthUser[] | ApiListResponse<AuthUser[]>>(`${API_BASE_URL}/usuarios`)
+      .get<AuthUser[] | ApiListResponse<AuthUser[]>>(`${BACKEND_API_URL}/usuarios`)
       .pipe(
         timeout(5000),
         map((response) => (Array.isArray(response) ? response : response.value ?? []))
@@ -43,13 +43,13 @@ export class UsersService {
 
   getRoles(): Observable<RoleOption[]> {
     return this.http
-      .get<RoleOption[]>(`${API_BASE_URL}/usuarios/roles`)
+      .get<RoleOption[]>(`${BACKEND_API_URL}/usuarios/roles`)
       .pipe(timeout(5000));
   }
 
   register(payload: CreateUserPayload): Observable<AuthUser> {
     return this.http
-      .post<AuthUser>(`${API_BASE_URL}/usuarios`, payload)
+      .post<AuthUser>(`${BACKEND_API_URL}/usuarios`, payload)
       .pipe(timeout(5000));
   }
 
@@ -58,10 +58,10 @@ export class UsersService {
 
     return forkJoin({
       usuario: this.http
-        .get<AuthUser>(`${API_BASE_URL}/usuarios/${userId}`)
+        .get<AuthUser>(`${BACKEND_API_URL}/usuarios/${userId}`)
         .pipe(timeout(5000)),
       prestamos: this.http
-        .get<PrestamoUsuario[] | ApiListResponse<PrestamoUsuario[]>>(`${API_BASE_URL}/prestamos`, {
+        .get<PrestamoUsuario[] | ApiListResponse<PrestamoUsuario[]>>(`${BACKEND_API_URL}/prestamos`, {
           params: prestamosParams,
         })
         .pipe(

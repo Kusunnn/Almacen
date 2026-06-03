@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, timeout } from 'rxjs';
-import { API_BASE_URL } from './api.config';
+import { BACKEND_API_URL } from './api.config';
 
 export interface HistorialItem {
   id: number;
@@ -36,10 +36,10 @@ export class HistorialService {
     if (filtros?.id_usuario) params = params.set('id_usuario', filtros.id_usuario);
     if (filtros?.id_herramienta) params = params.set('id_herramienta', filtros.id_herramienta);
 
-    return this.http.get<HistorialItem[]>(`${API_BASE_URL}/historial`, { params }).pipe(timeout(5000));
+    return this.http.get<HistorialItem[]>(`${BACKEND_API_URL}/historial`, { params }).pipe(timeout(5000));
   }
 
   createHistorial(dto: HistorialCreacionDto): Observable<HistorialItem> {
-    return this.http.post<HistorialItem>(`${API_BASE_URL}/historial`, dto).pipe(timeout(5000));
+    return this.http.post<HistorialItem>(`${BACKEND_API_URL}/historial`, dto).pipe(timeout(5000));
   }
 }
