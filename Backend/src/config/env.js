@@ -8,4 +8,5 @@ export const env = {
   nodeEnv: process.env.NODE_ENV ?? "development",
   databaseUrl: process.env.DATABASE_URL,
   directUrl: process.env.DIRECT_URL,
+  authServiceUrl: process.env.AUTH_SERVICE_URL ?? "http://localhost:3001/api/auth",
 };

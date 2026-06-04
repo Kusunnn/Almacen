@@ -2,6 +2,7 @@ import { ZodError } from "zod";
 import * as dto from "./historial.dto.js";
 import * as mapper from "./historial.mapper.js";
 import * as repo from "./historial.repository.js";
+import { existsUsuario } from "../AuthService/auth-service.client.js";
 
 function httpError(message, status = 500, detalles = undefined) {
   const error = new Error(message);
@@ -20,7 +21,7 @@ function zodToHttpError(error) {
 
 async function validarRelaciones(data) {
   if (data.id_usuario !== undefined && data.id_usuario !== null) {
-    if (!(await repo.existsUsuario(data.id_usuario))) {
+    if (!(await existsUsuario(data.id_usuario))) {
       throw httpError("El usuario indicado no existe", 400);
     }
   }

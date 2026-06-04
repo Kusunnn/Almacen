@@ -1,9 +1,6 @@
 import { prisma } from "../../db/prisma.js";
 
 const includeRelations = {
-  usuarios: {
-    select: { id: true, nombre: true, correo: true },
-  },
   herramientas: {
     select: { id: true, nombre: true },
   },
@@ -26,10 +23,6 @@ export async function findById(id) {
     where: { id },
     include: includeRelations,
   });
-}
-
-export async function existsUsuario(id) {
-  return (await prisma.usuarios.count({ where: { id } })) > 0;
 }
 
 export async function existsHerramienta(id) {

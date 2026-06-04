@@ -3,6 +3,7 @@ import { ZodError } from "zod";
 import * as dto from "./prestamos.dto.js";
 import * as mapper from "./prestamos.mapper.js";
 import * as repo from "./prestamos.repository.js";
+import { existsUsuario } from "../AuthService/auth-service.client.js";
 
 function zodToHttpError(zodErr) {
   const err = new Error("Datos inválidos");
@@ -14,7 +15,7 @@ function zodToHttpError(zodErr) {
 
 async function validarRelaciones(data, excludePrestamoId = null) {
   if (data.id_usuario !== undefined && data.id_usuario !== null) {
-    const usuarioExiste = await repo.existsUsuario(data.id_usuario);
+    const usuarioExiste = await existsUsuario(data.id_usuario);
     if (!usuarioExiste) {
       const err = new Error("El usuario indicado no existe");
       err.status = 400;

@@ -8,13 +8,7 @@ export function toHistorialDto(historial) {
     id_usuario: historial.id_usuario ?? null,
     id_herramienta: historial.id_herramienta ?? null,
     fecha_movimiento: toIsoOrNull(historial.fecha_movimiento),
-    usuario: historial.usuarios
-      ? {
-          id: historial.usuarios.id,
-          nombre: historial.usuarios.nombre,
-          correo: historial.usuarios.correo ?? null,
-        }
-      : null,
+    usuario: null,
     herramienta: historial.herramientas
       ? {
           id: historial.herramientas.id,

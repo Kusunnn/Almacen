@@ -5,7 +5,7 @@ function toIsoOrNull(value) {
 }
 
 /**
- * @param {import('@prisma/client').prestamos & {usuarios?: any, herramientas?: any}} prestamo
+ * @param {import('@prisma/client').prestamos & {herramientas?: any}} prestamo
  */
 export function toPrestamoDto(prestamo) {
   return {
@@ -18,13 +18,7 @@ export function toPrestamoDto(prestamo) {
     estado: prestamo.estado ?? null,
     observaciones: prestamo.observaciones ?? null,
     cantidad: prestamo.cantidad ?? null,
-    usuario: prestamo.usuarios
-      ? {
-          id: prestamo.usuarios.id,
-          nombre: prestamo.usuarios.nombre,
-          correo: prestamo.usuarios.correo ?? null,
-        }
-      : null,
+    usuario: null,
     herramienta: prestamo.herramientas
       ? {
           id: prestamo.herramientas.id,

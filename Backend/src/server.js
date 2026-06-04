@@ -10,9 +10,7 @@ import herramientasRouter from "./modules/Herramientas/herramientas.routes.js";
 import historialRouter from "./modules/Historial/historial.routes.js";
 import marcasRouter from "./modules/Marcas/marcas.routes.js";
 import prestamosRouter from "./modules/Prestamos/prestamos.routes.js";
-import rolesRouter from "./modules/Roles/roles.routes.js";
 import tiposHerramientaRouter from "./modules/TiposHerramienta/tipos-herramienta.routes.js";
-import usuariosRouter from "./modules/Usuarios/usuarios.routes.js"; 
 
 const app = express();
 
@@ -33,9 +31,7 @@ app.use("/api/herramientas", herramientasRouter);
 app.use("/api/historial", historialRouter);
 app.use("/api/marcas", marcasRouter);
 app.use("/api/prestamos", prestamosRouter);
-app.use("/api/roles", rolesRouter);
 app.use("/api/tipos-herramienta", tiposHerramientaRouter);
-app.use("/api/usuarios", usuariosRouter); 
 
 // ── Ruta raíz (health-check) ──────────────────────────────────────────────────
 app.get("/", (_req, res) => {
